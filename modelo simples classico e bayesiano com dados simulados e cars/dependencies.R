@@ -1,16 +1,26 @@
 
 # Cadeia ------------------------------------------------------------------
 
-cadeia = function(df,name,p){
-  par(mar = c(5,5,2,2),
-      mfrow = c(ncol(df),1))
-  for(i in 1:ncol(df)){
-    plot(df[,i],type="l",ylab=name[i],xlab="Iterações", cex.lab=1.8,cex.main=2)
-    abline(h=mean(p[i]), col="red",lwd=2)
-    abline(h=quantile(df[,i],0.025),lty=3,col="blue",lwd=2)
-    abline(h=quantile(df[,i],0.975),lty=3,col="blue",lwd=2)
+cadeia = function(df,name,p=NULL){
+  if(is.null(p)){
+    par(mar = c(5,5,2,2),
+        mfrow = c(ncol(df),1))
+    for(i in 1:ncol(df)){
+      plot(df[,i],type="l",ylab=name[i],xlab="Iterações", cex.lab=1.8,cex.main=2)
+      abline(h=quantile(df[,i],0.025),lty=3,col="blue",lwd=2)
+      abline(h=quantile(df[,i],0.975),lty=3,col="blue",lwd=2)
+    }
+    par(mfrow=c(1,1))
+  }else{
+    par(mar = c(5,5,2,2),
+        mfrow = c(ncol(df),1))
+    for(i in 1:ncol(df)){
+      plot(df[,i],type="l",ylab=name[i],xlab="Iterações", cex.lab=1.8,cex.main=2)
+      abline(h=mean(p[i]), col="red",lwd=2)
+      abline(h=quantile(df[,i],0.025),lty=3,col="blue",lwd=2)
+      abline(h=quantile(df[,i],0.975),lty=3,col="blue",lwd=2)
+    }
   }
-  par(mfrow=c(1,1))
 }
 
 
