@@ -16,7 +16,22 @@ cadeia = function(df,name,p){
 
 # Histograma e densidade --------------------------------------------------
 
-hist_den <- function(df, name = name,p){
+hist_den <- function(df, name = name,p=NULL){
+  if(is.null(p)){
+    g <- ggplot(data=df[1:length(df)/3] %>% as.data.frame(), aes(x=.)) + 
+      geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+                     colour="black", fill="white") +
+      geom_density(alpha=.2, fill="lightgrey")+  # Overlay with transparent density plot
+      labs(y="Densidade", x=name )+
+      theme(axis.text.x = element_text(size=50))+
+      theme(axis.text.y = element_text(size=50))+ 
+      theme(axis.title.y = element_text(size = rel(1.8)))+
+      theme_classic()+
+      geom_density(data=df[(length(df)/3):(2*(length(df)/3))] %>% as.data.frame(),aes(x=., colour=I("darkred")))+
+      geom_density(data=df[(2*(length(df)/3)):length(df)] %>% as.data.frame(),aes(x=., colour=I("darkblue")))
+    
+    return(g)
+  }else{
     g <- ggplot(data=df[1:length(df)/3] %>% as.data.frame(), aes(x=.)) + 
       geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
                      colour="black", fill="white") +
@@ -31,8 +46,9 @@ hist_den <- function(df, name = name,p){
       geom_vline(xintercept = p,colour="red")
     
     return(g)
-    
   }
+  
+}
   
 
 # Autocorrelacao ----------------------------------------------------------
@@ -54,18 +70,18 @@ FAC <- function(df) {
 coeficientes <- function(df,real=NULL){
   if(is.null(real)){
   cbind(
-  "Média"      = apply(df,2,mean),
+  "Média" = apply(df,2,mean),
   "Desv. Pad." = apply(df,2,sd),
-  "IC inf"     = apply(df,2,function(x)quantile(x,0.025)),
-  "IC sup"     = apply(df,2,function(x)quantile(x,0.975))) %>% 
+  "IC inf" = apply(df,2,function(x)quantile(x,0.025)),
+  "IC sup" = apply(df,2,function(x)quantile(x,0.975))) %>% 
     round(4)
   }else{
     cbind(
-      "Média"      = apply(df,2,mean),
+      "Média" = apply(df,2,mean),
       "Desv. Pad." = apply(df,2,sd),
-      "IC inf"     = apply(df,2,function(x)quantile(x,0.025)),
-      "IC sup"     = apply(df,2,function(x)quantile(x,0.975)),
-      "Real"       = as.numeric(real)) %>% 
+      "IC inf" = apply(df,2,function(x)quantile(x,0.025)),
+      "IC sup" = apply(df,2,function(x)quantile(x,0.975)),
+      "Real" = as.numeric(real)) %>% 
       round(4) 
     }
 }
