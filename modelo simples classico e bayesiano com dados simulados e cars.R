@@ -2,8 +2,14 @@
 # ############################################# Dados simulados ##############################################
 # ############################################################################################################
 
+# carregando dependencias
 
-# Amostrador de Gibbs para modelo linear bayesiano --------------------------
+source("dependencies.R",encoding = "UTF-8")
+
+############################
+#     Gerando a amostra
+############################
+
 set.seed(12)
 
 # Amostra que sera utilizada:
@@ -15,17 +21,22 @@ tau <- 2
 x   <- rnorm(n)
 y   <- b0 + b1 * x + rnorm(n,0,sqrt(1/tau))
 
+
 #Conferindo normalidade dos dados
 shapiro.test(y)
 shapiro.test(x)
 
 
-# #Parametros da distribuicao a priori 
+############################
+#   Parametros a  Priori
+############################
+
 # \bs{\theta} = (\beta_0, \beta_1, \tau)
 # m_0 = m_1 = 0, \sigma_0^2 = sigma_1^2 = 100, a=0,1 e b=0,1
 #Parametros para b0 ~ N(mu0, sig0)
 mu0   = 0
 sig0  = 1000
+
 
 #Parametros para b1 ~ N(mu1, sig1)
 mu1   = 0
@@ -35,13 +46,15 @@ sig1  = 1000
 a     = 0.1
 b     = 0.1
 
-# # Valores da cadeia 
+
+############################
+#    Valores da cadeia
+############################
+
 nsim          = 3*10000
 cadeia.b0     = rep(0,nsim)
 cadeia.b1     = rep(0,nsim)
 cadeia.tau    = rep(0,nsim)
-
-
 
 # #Chutes iniciais: 
 
@@ -49,7 +62,10 @@ cadeia.b0[1]   = 0
 cadeia.b1[1]   = 0
 cadeia.tau[1]  = 1
 
-# #Algoritimo 
+############################
+#    Algoritimo da cadeia
+############################
+
 pb <- txtProgressBar(min = 0, max = nsim, style = 3) # iniciando barra de processo
 for (k in 2:nsim){
   
@@ -71,13 +87,9 @@ for (k in 2:nsim){
   
 }; close(pb) #Encerrando barra de processo
 
-# Conferindo ajuste do modelo --------------------------------------
-
-# carregando dependencias
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-source("dependencies.R",encoding = "UTF-8")
+############################
+#    Resultados da cadeia
+############################
 
 # Juntando resultados:
 inds    <- seq(nsim/2,nsim) # Definindo os indices
@@ -146,11 +158,15 @@ cbind(y,x) %>%
   # annotate("text", label=text.classico,  x=100, y=5)+
   # annotate("text", label=text.bayes,  x=101, y=3)
 
-# ------------------------------------------------------------- Dados reais -------------------------------------------------------------
+# ############################################################################################################
+# #############################################   Dados reais   ##############################################
+# ############################################################################################################
 
 # Amostrador de Gibbs para modelo linear bayesiano --------------------------
 
-# Amostra que sera utilizada:
+############################
+#     Amostra utilizada
+############################
 
 y   = cars$speed
 x   = cars$dist
@@ -160,10 +176,10 @@ n   = nrow(cars)
 shapiro.test(y)
 shapiro.test(x)
 
+############################
+#   Parametros a  Priori
+############################
 
-# Amostrador de Gibbs para modelo linear bayesiano --------------------------
-
-# #Parametros da distribuicao a priori ------------------------------------
 # \bs{\theta} = (\beta_0, \beta_1, \tau)
 # m_0 = m_1 = 0, \sigma_0^2 = sigma_1^2 = 100, a=0,1 e b=0,1
 #Parametros para b0 ~ N(mu0, sig0)
@@ -178,21 +194,27 @@ sig1  = 1000
 a     = 2
 b     = 2
 
-# # Valores da cadeia -----------------------------------------------------
-nsim          = 2*10000
+############################
+#    Valores da cadeia
+############################
+
+nsim          = 3*10000
 cadeia.b0     = rep(0,nsim)
 cadeia.b1     = rep(0,nsim)
 cadeia.tau    = rep(0,nsim)
 
 
 
-# #Chutes iniciais: -------------------------------------------------------
+# #Chutes iniciais:
 
 cadeia.b0[1]   = 0
 cadeia.b1[1]   = 0
 cadeia.tau[1]  = 1
 
-# #Algoritimo --------------------------------------------------------------
+############################
+#    Algoritimo da cadeia
+############################
+
 pb <- txtProgressBar(min = 0, max = nsim, style = 3)
 for (k in 2:nsim){
   
@@ -214,27 +236,24 @@ for (k in 2:nsim){
   
 }; close(pb) #Encerrando barra de processo
 
-# Conferindo ajuste do modelo ---------------------------------------------
 
-# Dependencias
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-source("dependencies.R",encoding = "UTF-8")
+############################
+#    Resultados da cadeia
+############################
 
 # Juntando resultados:
-inds     <- seq(nsim/2,nsim,nsim*0.0001) # Definindo os indices
+inds     <- seq(nsim/2,nsim) # Definindo os indices
 results  <- cbind(cadeia.b0,cadeia.b1,cadeia.tau) %>% as.data.frame() %>% .[inds,]
 classico <- c(coefficients(lm(cars)),1/var(lm(cars)$residuals))
 name     <- c(expression(beta[0]),expression(beta[1]),expression(tau))
 
 # Cadeia
-cadeia(results,name,classico)
+cadeia(results,name)
 
 # Histograma e densidade
-g1 <- hist_den(results[,1],name = name[1], p = classico[1])
-g2 <- hist_den(results[,2],name = name[2], p = classico[2])
-g3 <- hist_den(results[,3],name = name[3], p = classico[3])
+g1 <- hist_den(results[,1],name = name[1])
+g2 <- hist_den(results[,2],name = name[2])
+g3 <- hist_den(results[,3],name = name[3])
 grid.arrange(g1,g2,g3,ncol=1)
 
 # ACF
@@ -261,13 +280,6 @@ abline(a=a.bayes,b=b.bayes,col="red")
 
 
 # Com GGPLOT para o texto -------------------------------------------------
-
-# pacotes=c("stringr", "ggplot2", "ggExtra")
-# install.packages(pacotes)
-
-library(stringr)
-library(ggplot2)
-library(ggExtra)
 
 # Texto da imagem
 text.classico=str_c("Modelo Classico: ","y = ",round(a.classico,4)," x + ",round(b.classico,4))
