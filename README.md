@@ -4,9 +4,9 @@
 
 # Introdução
 
-Modelar um fenômeno aleatório consiste em realizar aﬁrmações sobre o processo
-gerador dele. Muitas vezes essas aﬁrmações são realizadas em vários níveis como, por
-exemplo, quando as observaçõoes pertencem a grupos diferentes e cada grupo tem suas
+Modelar um fenômeno aleatório consiste em realizar aﬁrmaçoes sobre o processo
+gerador dele. Muitas vezes essas aﬁrmaçoes são realizadas em vários níveis como, por
+exemplo, quando as observaçooes pertencem a grupos diferentes e cada grupo tem suas
 próprias propriedades (média, variância, entre outras). Nesses casos recorre-se a modelos
 hierárquicos, que também são conhecidos como modelos multiníveis.
 
@@ -85,9 +85,9 @@ o uso do software R (versão 1.0.153) que é uma linguagem e um ambiente
 para programação estatística e além disso todo o texto produzido foi
 feito em \LaTeX, uma linguagem para a produção de artigos científicos.
 
-Toda semana ocorriam reuniões com a orientadora para discutir o tema,
+Toda semana ocorriam reunioes com a orientadora para discutir o tema,
 retirar eventuais dúvidas dos cálculos realizados e no decorrer do
-projeto quando fez-se nescessário as simulações em R esses encontros
+projeto quando fez-se nescessário as simulaçoes em R esses encontros
 também envolviam a avaliação do andamento da produção dos códigos
 computacionais.
 
