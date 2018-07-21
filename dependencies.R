@@ -1,7 +1,7 @@
 
 # Pacotes -----------------------------------------------------------------
 
-packages = c('dplyr', 'ggplot2','gridExtra', 'dplyr','purrr', 'xtable','stringr', 'ggExtra')
+packages = c('dplyr', 'ggplot2','gridExtra', 'dplyr','purrr', 'xtable','stringr', 'ggExtra','plotly')
 
 for (package in packages) {
   if (!require(package, character.only=T, quietly=T)) {
@@ -258,3 +258,32 @@ tab = as.data.frame(
   
   return(resultados = list(sumario, tab))
 }
+
+      
+# tabela_coeficientes -----------------------------------------------------------
+      
+tabela_coeficientes <- function(coef){
+  plot_ly(
+    type = 'table',
+    columnorder = 1:ncol(coef),
+    columnwidth = rep(80, ncol(coef)),
+    header = list(
+      values = coef %>% names %>% as.list,
+      line = list(color = '#506784'),
+      fill = list(color = "#1F8FFFB4"),
+      align = rep('center',ncol(coef)),
+      font = list(color = 'white', size = 15),
+      height = 40
+    ),
+    cells = list(
+      values = t(coef),
+      line = list(color = '#506784'),
+      fill = list(color = c("#1F8FFF58", rep('white',ncol(coef)-2),"#1F8FFF58")),
+      align = rep('center',ncol(coef)),
+      font = list(color = c('#506784'), size = 12),
+      height = 30
+    )) 
+}
+
+      
+      
