@@ -6,7 +6,7 @@ packages = c('dplyr', 'ggplot2','gridExtra', 'dplyr','purrr', 'xtable','stringr'
 for (package in packages) {
   if (!require(package, character.only=T, quietly=T)) {
     install.packages(package)
-    library(package, character.only=T)
+    suppressMessages(library(package, character.only=T))
   }
 }
 
