@@ -280,7 +280,7 @@ tabela_coeficientes <- function(coef){
       line = list(color = '#506784'),
       fill = list(color = c("#1F8FFF58", rep('white',ncol(coef)-2),"#1F8FFF58")),
       align = rep('center',ncol(coef)),
-      font = list(color = c('#506784'), size = 12),
+      font = list(color = c('white',rep('#506784',ncol(coef)-2),'white'), size = 12),
       height = 30
     )) 
 }
