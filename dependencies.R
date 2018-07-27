@@ -1,7 +1,7 @@
 
 # Pacotes -----------------------------------------------------------------
 
-packages = c('dplyr', 'ggplot2','gridExtra', 'dplyr','purrr', 'xtable','stringr', 'ggExtra','plotly')
+packages = c('dplyr', 'ggplot2','gridExtra', 'dplyr','purrr', 'xtable','stringr', 'ggExtra','plotly','magrittr')
 
 for (package in packages) {
   if (!require(package, character.only=T, quietly=T)) {
