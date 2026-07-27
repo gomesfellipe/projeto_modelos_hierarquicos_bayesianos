@@ -71,13 +71,15 @@ Resultado completo, com todos os gráficos e as tabelas de coeficiente, em [`mod
 
 ## Referências bibliográficas
 
-Banerjee, S., Gelfand, A. E. e Carlin, B. P. (2003) *Hierarchical Modeling and Analysis for Spatial Data*. Chapman & Hall/CRC.
+Links de livro pra Amazon são de afiliado (`tag=gomesfellipe-20`), mesmo padrão usado no [post do blog](https://gomesfellipe.github.io/post/2018-07-28-modelo-bayesiano-do-zero/).
 
-Gamerman, D. e Lopes, H. F. (2006) *Monte Carlo Markov Chain: Stochastic Simulation for Bayesian Inference*. London: Chapman & Hall, second edn.
+Banerjee, S., Gelfand, A. E. e Carlin, B. P. (2003) <a href="https://www.amazon.com.br/Hierarchical-Modeling-Analysis-Spatial-Data/dp/158488410X?tag=gomesfellipe-20" target="_blank" rel="sponsored nofollow noopener"><em>Hierarchical Modeling and Analysis for Spatial Data</em></a>. Chapman & Hall/CRC.
 
-Gelman, A. e Hill, J. (2006) *Data Analysis Using Regression and Multilevel/Hierarchical Models*. Cambridge University Press.
+Gamerman, D. e Lopes, H. F. (2006) <a href="https://www.amazon.com.br/Markov-Chain-Monte-Carlo-Statistical/dp/1584885874?tag=gomesfellipe-20" target="_blank" rel="sponsored nofollow noopener"><em>Monte Carlo Markov Chain: Stochastic Simulation for Bayesian Inference</em></a>. London: Chapman & Hall, second edn.
 
-Raudenbush, S. W., Bryk, A. S. (2001) *Hierarchical linear models: applications and data analysis methods*. Sage.
+Gelman, A. e Hill, J. (2006) <a href="https://www.amazon.com.br/Analysis-Regression-Multilevel-Hierarchical-Models/dp/052168689X?tag=gomesfellipe-20" target="_blank" rel="sponsored nofollow noopener"><em>Data Analysis Using Regression and Multilevel/Hierarchical Models</em></a>. Cambridge University Press.
+
+Raudenbush, S. W., Bryk, A. S. (2001) <a href="https://www.amazon.com.br/Hierarchical-Linear-Models-Applications-Analysis/dp/076191904X?tag=gomesfellipe-20" target="_blank" rel="sponsored nofollow noopener"><em>Hierarchical linear models: applications and data analysis methods</em></a>. Sage.
 
 Souza, R. de O. *Modelagem do nível de dor e estresse de recém-nascidos internados em UTI neonatal utilizando um modelo hierárquico Bayesiano com dados longitudinais*. Universidade Federal Fluminense, RJ, Brasil: Trabalho de Conclusão de Curso, Bacharelado em Estatística, 2015.
 
