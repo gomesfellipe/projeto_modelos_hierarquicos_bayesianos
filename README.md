@@ -4,36 +4,36 @@
 
 # Introdução
 
-Modelar um fenômeno aleatório consiste em realizar aﬁrmaçoes sobre o processo
-gerador dele. Muitas vezes essas aﬁrmaçoes são realizadas em vários níveis como, por
-exemplo, quando as observaçooes pertencem a grupos diferentes e cada grupo tem suas
+Modelar um fenômeno aleatório consiste em realizar afirmações sobre o processo
+gerador dele. Muitas vezes essas afirmações são realizadas em vários níveis como, por
+exemplo, quando as observações pertencem a grupos diferentes e cada grupo tem suas
 próprias propriedades (média, variância, entre outras). Nesses casos recorre-se a modelos
 hierárquicos, que também são conhecidos como modelos multiníveis.
 
-Aplicaço˜es desses modelos podem ser encontradas em várias áreas tais como na
-Educaçao, nas Ciências Sociais e na Saúde. Suponha que demógrafos desejam examinar
+Aplicações desses modelos podem ser encontradas em várias áreas tais como na
+Educação, nas Ciências Sociais e na Saúde. Suponha que demógrafos desejam examinar
 como diferenças no desenvolvimento da economia nacional podem interferir na relação
 entre o grau educacional dos adultos e a taxa de fertilidade. Para isso, pode-se
-utilizar 2 estágios: nível nacional (indicadores econˆomicos) e nível domiciliar (educaçao e
+utilizar 2 estágios: nível nacional (indicadores econômicos) e nível domiciliar (educação e
 fertilidade). Ou suponha que o interesse está em medir o rendimento escolar dos alunos e,
-para isso, utiliza-se 4 estágios: os alunos, as turmas, as escolas e os órgao administradores
-ou a regiao.
+para isso, utiliza-se 4 estágios: os alunos, as turmas, as escolas e os órgãos administradores
+ou a região.
 
 Modelos de regressão linear explicam a variável resposta através de variáveis
-explicativas e supo˜e que dada as variáveis explicativas, as variáveis respostas são
-independentes. Modelos lineares hierárquicos sao generalizaço˜es dos modelos de regressão
-linear pois assumem que as observaço˜es das unidades pertencentes ao agregado sao
+explicativas e supõe que dada as variáveis explicativas, as variáveis respostas são
+independentes. Modelos lineares hierárquicos são generalizações dos modelos de regressão
+linear pois assumem que as observações das unidades pertencentes ao agregado são
 dependentes.
 
-Ao modelar a variável resposta, há o surgimento de variáveis desconhecidas que sao
-chamadas de parâmetros. A inferencia bayesiana permite que qualquer crença que se
-tenha sob esse parâmetro seja considerada através da distribuiçao a priori em conjunto
+Ao modelar a variável resposta, há o surgimento de variáveis desconhecidas que são
+chamadas de parâmetros. A inferência bayesiana permite que qualquer crença que se
+tenha sob esse parâmetro seja considerada através da distribuição a priori em conjunto
 com a função de verossimilhança.
 
 # Objetivo
 
 O objetivo deste trabalho foi o estudo sobre a modelagem hierárquica
-bayesiana. Para isso, dados foram simulados a ﬁm de analisar a
+bayesiana. Para isso, dados foram simulados a fim de analisar a
 sensibilidade da distribuição a priori atribuída e aprender sobre como inferir sobre os
 parâmetros desconhecidos.
 
@@ -41,28 +41,28 @@ parâmetros desconhecidos.
 
 A inferência bayesiana permite que crenças adquiridas antes da amostragem sejam
 consideradas na modelagem do problema. E, quando não há crença, há a possibilidade
-de uma distribuiçao nao informativa ser atribúıda tendo resultados similares a inferência
+de uma distribuição não informativa ser atribuída tendo resultados similares a inferência
 clássica.
 
-Muitas vezes modelar hierarquicamente facilita a atribuição das distribuiço˜es e a
+Muitas vezes modelar hierarquicamente facilita a atribuição das distribuições e a
 interpretação dos parâmetros
 
 # Metodologia
 
 A inferência sobre os parâmetros desconhecidos será realizada através da abordagem
-Bayesiana. Sendo assim, será necessário atribuir uma distribuiçao a priori ao conjunto
+Bayesiana. Sendo assim, será necessário atribuir uma distribuição a priori ao conjunto
 de parâmetros desconhecidos para combinar com a função de verossimilhança e, assim,
-obter a distribuição a posteriori. A distribuiçao a posteriori pode ser muito ou pouca
-afetada pela distribuiçao a priori. Além disso, dependendo das informaço˜es advindas da
+obter a distribuição a posteriori. A distribuição a posteriori pode ser muito ou pouca
+afetada pela distribuição a priori. Além disso, dependendo das informações advindas da
 amostra, há a necessidade de colocarmos uma distribuição mais informativa para alguns
 parâmetros.
 
 Para estimar os parâmetros, recorreremos aos métodos de Monte Carlo via cadeias de
-Markov (MCMC). Como a distribuiçao conjunta a posteriori costuma nao possuir forma
+Markov (MCMC). Como a distribuição conjunta a posteriori costuma não possuir forma
 analítica conhecida, será utilizado o Amostrador de Gibbs com passos de Metropolis
-Hastings para a estimaçao.
+Hastings para a estimação.
 Sendo assim, o aluno simulará dados e fará uma análise de sensibilidade para investigar
-as questoes já apontadas e aprenderá a utilizar o MCMC.
+as questões já apontadas e aprenderá a utilizar o MCMC.
 
 # Relato
 
@@ -85,9 +85,9 @@ o uso do software R (versão 1.0.153) que é uma linguagem e um ambiente
 para programação estatística e além disso todo o texto produzido foi
 feito em \LaTeX, uma linguagem para a produção de artigos científicos.
 
-Toda semana ocorriam reunioes com a orientadora para discutir o tema,
+Toda semana ocorriam reuniões com a orientadora para discutir o tema,
 retirar eventuais dúvidas dos cálculos realizados e no decorrer do
-projeto quando fez-se nescessário as simulaçoes em R esses encontros
+projeto quando fez-se nescessário as simulações em R esses encontros
 também envolviam a avaliação do andamento da produção dos códigos
 computacionais.
 
@@ -107,7 +107,7 @@ treinar a escrita de artigos cientificos com \LaTeX, aprimorar a
 habilidade em programação em linguagem R melhorando assim tanto a minha
 formação como reconhecendo o verdadeiro valor da educação e da ciência.
 
-# Bibliograﬁa
+# Bibliografia
 
 Banerjee, S., Gelfand, A. E. e Carlin, B. P. (2003) Hierarchical Modeling and Analysis
 for Spatial Data. Chapman & Hall/CRC.
@@ -123,7 +123,7 @@ data analysis methods. Sage.
 
 Souza, R. de O. Modelagem do nível de dor e estresse de recém-nascidos internados
 em UTI neonatal utilizando um modelo hierárquico Bayesiano com dados longitudinais.
-Universidade Federal Fluminense, RJ, Brasil: Trabalho de Conclusao de Curso
+Universidade Federal Fluminense, RJ, Brasil: Trabalho de Conclusão de Curso
 Bacharelado em Estatística, 2015.
 
 Velarde, L. G. C., Migon, H. S. , Alcoforado, D. A. Hierarchical Bayesian models
