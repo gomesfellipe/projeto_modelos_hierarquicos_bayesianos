@@ -4,9 +4,102 @@
 
 # carregando dependencias
 
-source("dependencies.R",encoding = "UTF-8")
+source("gibbs_helpers.R",encoding = "UTF-8")
 
 # Amostrador de Gibbs para modelo linear bayesiano --------------------------
+
+# Full conditionals fecham por conjugacao em 2 niveis: alpha_i, beta_i | resto
+# ~ Normal (nivel do individuo i), tau, tau.alpha, tau.beta | resto ~ Gama
+# (precisoes), alpha_c, beta_c | resto ~ Normal (nivel da populacao). Prefixo
+# dccp. = "distribuicao condicional completa a posteriori", o parametro da
+# full conditional amostrada em seguida.
+gibbs_hierarquico <- function(y, x, n, t, nsim,
+                               m.alpha, V.alpha,
+                               m.beta, V.beta,
+                               a.tau, b.tau,
+                               a.alpha, b.alpha,
+                               a.beta, b.beta){
+
+  #Criando os objetos:
+  cadeia.alpha.i    = matrix(NA,nsim,n)
+  cadeia.beta.i     = matrix(NA,nsim,n)
+  cadeia.tau.c      = matrix(NA,nsim,1)
+  cadeia.alpha.c    = matrix(NA,nsim,1)
+  cadeia.beta.c     = matrix(NA,nsim,1)
+  cadeia.tau.alpha  = matrix(NA,nsim,1)
+  cadeia.tau.beta   = matrix(NA,nsim,1)
+
+  #Chutes iniciais:
+  cadeia.alpha.i[1,]      = 0
+  cadeia.beta.i[1,]       = 0
+  cadeia.tau.c[1,]        = 1
+  cadeia.alpha.c[1,]      = 0
+  cadeia.beta.c[1,]       = 0
+  cadeia.tau.alpha[1,]    = 1
+  cadeia.tau.beta[1,]     = 1
+
+  # Obs.: Indice da cadeia sera k
+
+  #Criar uma barra de processo e acompanhar o carregamento:
+  pb <- txtProgressBar(min = 0, max = nsim, style = 3)
+
+  for(k in 2:nsim){
+
+    soma = 0
+    #Cadeia alpha.i e beta.i
+    for(i in 1:n){
+      dccp.tau.alpha      = 1  /  ((t*cadeia.tau.c[k-1])  +  cadeia.tau.alpha[k-1])
+      dccp.alpha.c        = (  cadeia.tau.c[k-1]*sum( y[i,] - cadeia.beta.i[k-1,i]*x  )  +
+                                 cadeia.tau.alpha[k-1]*cadeia.alpha.c[k-1] )  * dccp.tau.alpha
+      cadeia.alpha.i[k,i] = rnorm(1,dccp.alpha.c,sqrt(dccp.tau.alpha))
+
+
+      dccp.tau.beta       = 1  /  ((cadeia.tau.c[k-1]*sum(x^2))  +  cadeia.tau.beta[k-1])
+      u                   = (y[i,]-cadeia.alpha.i[k,i])*x
+      dccp.beta.c         = (cadeia.tau.c[k-1]*sum(u) +  (cadeia.tau.beta[k-1]*cadeia.beta.c[k-1]))  *  dccp.tau.beta
+      cadeia.beta.i[k,i]  = rnorm(1,dccp.beta.c,sqrt(dccp.tau.beta))
+
+      for(j in 1:t){soma = soma + (y[i,j] - cadeia.alpha.i[k,i]-cadeia.beta.i[k,i]*x[j])^2}
+    }
+
+    # tau | resto ~ Gama, usa soma dos quadrados dos residuos de todo i,j
+    dccp.a                 = ((n*t)/2) + a.tau
+    dccp.beta              = b.tau + 0.5  * soma
+    cadeia.tau.c[k]        = rgamma(1,dccp.a,dccp.beta)
+
+    # tau.alpha | resto ~ Gama (precisao dos alpha_i em torno de alpha_c)
+    dccp.a.alpha           = (n/2) + a.alpha
+    dccp.b.alpha           = b.alpha + 0.5 * sum((cadeia.alpha.i[k,]-cadeia.alpha.c[k-1,])^2)
+    cadeia.tau.alpha[k]    = rgamma(1,dccp.a.alpha,dccp.b.alpha)
+
+    # tau.beta | resto ~ Gama (precisao dos beta_i em torno de beta_c)
+    dccp.a.beta            = (n/2) + a.beta
+    dccp.b.beta            = b.beta + 0.5 * sum((cadeia.beta.i[k,]-cadeia.beta.c[k-1,])^2)
+    cadeia.tau.beta[k]     = rgamma(1,dccp.a.beta,dccp.b.beta)
+
+    # alpha_c | resto ~ Normal (media populacional dos alpha_i)
+    dccp.V.alpha           = 1  /  (n*cadeia.tau.alpha[k]  +  1/V.alpha)
+    dccp.m.alpha           = (cadeia.tau.alpha[k]  *  sum(cadeia.alpha.i[k,])  +  m.alpha/V.alpha) *  dccp.V.alpha
+    cadeia.alpha.c[k]      = rnorm(1,dccp.m.alpha,sqrt(dccp.V.alpha))
+
+    # beta_c | resto ~ Normal (media populacional dos beta_i)
+    dccp.V.beta            = 1  /  (n*cadeia.tau.beta[k]  +  1/V.beta)
+    dccp.m.beta            = (cadeia.tau.beta[k]  *  sum(cadeia.beta.i[k,])  +  m.beta/V.beta) *  dccp.V.beta
+    cadeia.beta.c[k]       = rnorm(1,dccp.m.beta,sqrt(dccp.V.beta))
+
+    # update barra de processo
+    setTxtProgressBar(pb, k)
+
+  }; close(pb) #Encerrando barra de processo
+
+  list(alpha.i   = cadeia.alpha.i,
+       beta.i    = cadeia.beta.i,
+       tau.c     = cadeia.tau.c,
+       alpha.c   = cadeia.alpha.c,
+       beta.c    = cadeia.beta.c,
+       tau.alpha = cadeia.tau.alpha,
+       tau.beta  = cadeia.tau.beta)
+}
 
 ############################
 #     Gerando a amostra
@@ -62,27 +155,6 @@ b.beta  =0.001
 nsim              = 150000
 burnin            =  nsim/2
 
-#Criando os objetos:
-cadeia.alpha.i    = matrix(NA,nsim,n)
-cadeia.beta.i     = matrix(NA,nsim,n)
-cadeia.tau.c      = matrix(NA,nsim,1)
-cadeia.alpha.c    = matrix(NA,nsim,1)
-cadeia.beta.c     = matrix(NA,nsim,1)
-cadeia.tau.alpha  = matrix(NA,nsim,1)
-cadeia.tau.beta   = matrix(NA,nsim,1)
-
-#Chutes iniciais:
-cadeia.alpha.i[1,]      = 0
-cadeia.beta.i[1,]       = 0
-cadeia.tau.c[1,]        = 1
-cadeia.alpha.c[1,]      = 0
-cadeia.beta.c[1,]       = 0
-cadeia.tau.alpha[1,]    = 1
-cadeia.tau.beta[1,]     = 1
-
-# Obs.: Indice da cadeia sera k
-# ----------------------------------------------------------------------------------
-
 ############################
 #    Algoritimo da cadeia
 ############################
@@ -90,63 +162,22 @@ cadeia.tau.beta[1,]     = 1
 # Sementes:
 set.seed(1)
 
+antes <- Sys.time()
+cadeias <- gibbs_hierarquico(y, x, n, t, nsim,
+                              m.alpha, V.alpha,
+                              m.beta, V.beta,
+                              a.tau, b.tau,
+                              a.alpha, b.alpha,
+                              a.beta, b.beta)
+depois <- Sys.time() - antes; depois
 
-#Criar uma barra de processo e acompanhar o carregamento:
-pb <- txtProgressBar(min = 0, max = nsim, style = 3);antes = Sys.time()
-
-for(k in 2:nsim){
-  
-  soma = 0
-  #Cadeia alpha.i e beta.i
-  for(i in 1:n){
-    dccp.tau.alpha      = 1  /  ((t*cadeia.tau.c[k-1])  +  cadeia.tau.alpha[k-1])
-    dccp.alpha.c        = (  cadeia.tau.c[k-1]*sum( y[i,] - cadeia.beta.i[k-1,i]*x  )  +  
-                               cadeia.tau.alpha[k-1]*cadeia.alpha.c[k-1] )  * dccp.tau.alpha
-    cadeia.alpha.i[k,i] = rnorm(1,dccp.alpha.c,sqrt(dccp.tau.alpha))
-    
-    
-    dccp.tau.beta       = 1  /  ((cadeia.tau.c[k-1]*sum(x^2))  +  cadeia.tau.beta[k-1])
-    u                   = (y[i,]-cadeia.alpha.i[k,i])*x
-    dccp.beta.c         = (cadeia.tau.c[k-1]*sum(u) +  (cadeia.tau.beta[k-1]*cadeia.beta.c[k-1]))  *  dccp.tau.beta
-    cadeia.beta.i[k,i]  = rnorm(1,dccp.beta.c,sqrt(dccp.tau.beta))
-    
-    for(j in 1:t){soma = soma + (y[i,j] - cadeia.alpha.i[k,i]-cadeia.beta.i[k,i]*x[j])^2}
-  }
-  
-  # cadeia de tau
-  dccp.a                 = ((n*t)/2) + a.tau 
-  dccp.beta              = b.tau + 0.5  * soma
-  cadeia.tau.c[k]        = rgamma(1,dccp.a,dccp.beta)
-  #cadeia.tau.c[k]       = tau
-  
-  #cadeia de tau.alpha
-  dccp.a.alpha           = (n/2) + a.alpha
-  dccp.b.alpha           = b.alpha + 0.5 * sum((cadeia.alpha.i[k,]-cadeia.alpha.c[k-1,])^2) 
-  cadeia.tau.alpha[k]    = rgamma(1,dccp.a.alpha,dccp.b.alpha)
-  #cadeia.tau.alpha[k]   = taualpha
-  
-  #cadeia de tau.beta
-  dccp.a.beta            = (n/2) + a.beta
-  dccp.b.beta            = b.beta + 0.5 * sum((cadeia.beta.i[k,]-cadeia.beta.c[k-1,])^2) 
-  cadeia.tau.beta[k]     = rgamma(1,dccp.a.beta,dccp.b.beta)
-  #cadeia.tau.beta[k]    = taubeta
-  
-  #Cadeia de alpha.c
-  dccp.V.alpha           = 1  /  (n*cadeia.tau.alpha[k]  +  1/V.alpha)
-  dccp.m.alpha           = (cadeia.tau.alpha[k]  *  sum(cadeia.alpha.i[k,])  +  m.alpha/V.alpha) *  dccp.V.alpha
-  cadeia.alpha.c[k]      = rnorm(1,dccp.m.alpha,sqrt(dccp.V.alpha))
-  #cadeia.alpha.c[k]     = alpha_c
-  
-  #Cadeia de beta.c
-  dccp.V.beta            = 1  /  (n*cadeia.tau.beta[k]  +  1/V.beta)
-  dccp.m.beta            = (cadeia.tau.beta[k]  *  sum(cadeia.beta.i[k,])  +  m.beta/V.beta) *  dccp.V.beta
-  cadeia.beta.c[k]       = rnorm(1,dccp.m.beta,sqrt(dccp.V.beta))
-  #cadeia.beta.c[k]      = beta_c
-  
-  # update barra de processo
-  setTxtProgressBar(pb, k)
-  
-}; close(pb); depois = Sys.time() - antes; depois #Encerrando barra de processo e tempo da cadeia
+cadeia.alpha.i   <- cadeias$alpha.i
+cadeia.beta.i    <- cadeias$beta.i
+cadeia.tau.c     <- cadeias$tau.c
+cadeia.alpha.c   <- cadeias$alpha.c
+cadeia.beta.c    <- cadeias$beta.c
+cadeia.tau.alpha <- cadeias$tau.alpha
+cadeia.tau.beta  <- cadeias$tau.beta
 
 
 ############################
@@ -185,7 +216,7 @@ FAC(results)
 dev.off()
 
 # Coeficientes:
-coeficientes <- coeficientes_hierarquico(cadeia.alpha.i[inds,],alpha,
+resultado_hierarquico <- coeficientes_hierarquico(cadeia.alpha.i[inds,],alpha,
                          cadeia.beta.i[inds,], beta,
                          cadeia.alpha.c, alpha_c,
                          cadeia.beta.c, beta_c,
@@ -196,9 +227,9 @@ coeficientes <- coeficientes_hierarquico(cadeia.alpha.i[inds,],alpha,
 )
 
 # sumario:
-sumario <- coeficientes[[1]];sumario
+sumario <- resultado_hierarquico[[1]];sumario
 # credibilidade:
-tab <- coeficientes[[2]];tab
+tab <- resultado_hierarquico[[2]];tab
 
 
 
@@ -309,27 +340,6 @@ b.beta  =0.001
 nsim              = 50000
 burnin            =  nsim/3
 
-#Criando os objetos:
-cadeia.alpha.i    = matrix(NA,nsim,n)
-cadeia.beta.i     = matrix(NA,nsim,n)
-cadeia.tau.c      = matrix(NA,nsim,1)
-cadeia.alpha.c    = matrix(NA,nsim,1)
-cadeia.beta.c     = matrix(NA,nsim,1)
-cadeia.tau.alpha  = matrix(NA,nsim,1)
-cadeia.tau.beta   = matrix(NA,nsim,1)
-
-#Chutes iniciais:
-cadeia.alpha.i[1,]      = 0
-cadeia.beta.i[1,]       = 0
-cadeia.tau.c[1,]        = 1
-cadeia.alpha.c[1,]      = 0
-cadeia.beta.c[1,]       = 0
-cadeia.tau.alpha[1,]    = 1
-cadeia.tau.beta[1,]     = 1
-
-# Obs.: Indice da cadeia sera k
-# ----------------------------------------------------------------------------------
-
 ############################
 #    Algoritimo da cadeia
 ############################
@@ -337,63 +347,22 @@ cadeia.tau.beta[1,]     = 1
 # Sementes:
 set.seed(1)
 
+antes <- Sys.time()
+cadeias <- gibbs_hierarquico(y, x, n, t, nsim,
+                              m.alpha, V.alpha,
+                              m.beta, V.beta,
+                              a.tau, b.tau,
+                              a.alpha, b.alpha,
+                              a.beta, b.beta)
+depois <- Sys.time() - antes; depois
 
-#Criar uma barra de processo e acompanhar o carregamento:
-pb <- txtProgressBar(min = 0, max = nsim, style = 3);antes = Sys.time()
-
-for(k in 2:nsim){
-  
-  soma = 0
-  #Cadeia alpha.i e beta.i
-  for(i in 1:n){
-    dccp.tau.alpha      = 1  /  ((t*cadeia.tau.c[k-1])  +  cadeia.tau.alpha[k-1])
-    dccp.alpha.c        = (  cadeia.tau.c[k-1]*sum( y[i,] - cadeia.beta.i[k-1,i]*x  )  +  
-                               cadeia.tau.alpha[k-1]*cadeia.alpha.c[k-1] )  * dccp.tau.alpha
-    cadeia.alpha.i[k,i] = rnorm(1,dccp.alpha.c,sqrt(dccp.tau.alpha))
-    
-    
-    dccp.tau.beta       = 1  /  ((cadeia.tau.c[k-1]*sum(x^2))  +  cadeia.tau.beta[k-1])
-    u                   = (y[i,]-cadeia.alpha.i[k,i])*x
-    dccp.beta.c         = (cadeia.tau.c[k-1]*sum(u) +  (cadeia.tau.beta[k-1]*cadeia.beta.c[k-1]))  *  dccp.tau.beta
-    cadeia.beta.i[k,i]  = rnorm(1,dccp.beta.c,sqrt(dccp.tau.beta))
-    
-    for(j in 1:t){soma = soma + (y[i,j] - cadeia.alpha.i[k,i]-cadeia.beta.i[k,i]*x[j])^2}
-  }
-  
-  # cadeia de tau
-  dccp.a                 = ((n*t)/2) + a.tau 
-  dccp.beta              = b.tau + 0.5  * soma
-  cadeia.tau.c[k]        = rgamma(1,dccp.a,dccp.beta)
-  #cadeia.tau.c[k]       = tau
-  
-  #cadeia de tau.alpha
-  dccp.a.alpha           = (n/2) + a.alpha
-  dccp.b.alpha           = b.alpha + 0.5 * sum((cadeia.alpha.i[k,]-cadeia.alpha.c[k-1,])^2) 
-  cadeia.tau.alpha[k]    = rgamma(1,dccp.a.alpha,dccp.b.alpha)
-  #cadeia.tau.alpha[k]   = taualpha
-  
-  #cadeia de tau.beta
-  dccp.a.beta            = (n/2) + a.beta
-  dccp.b.beta            = b.beta + 0.5 * sum((cadeia.beta.i[k,]-cadeia.beta.c[k-1,])^2) 
-  cadeia.tau.beta[k]     = rgamma(1,dccp.a.beta,dccp.b.beta)
-  #cadeia.tau.beta[k]    = taubeta
-  
-  #Cadeia de alpha.c
-  dccp.V.alpha           = 1  /  (n*cadeia.tau.alpha[k]  +  1/V.alpha)
-  dccp.m.alpha           = (cadeia.tau.alpha[k]  *  sum(cadeia.alpha.i[k,])  +  m.alpha/V.alpha) *  dccp.V.alpha
-  cadeia.alpha.c[k]      = rnorm(1,dccp.m.alpha,sqrt(dccp.V.alpha))
-  #cadeia.alpha.c[k]     = alpha_c
-  
-  #Cadeia de beta.c
-  dccp.V.beta            = 1  /  (n*cadeia.tau.beta[k]  +  1/V.beta)
-  dccp.m.beta            = (cadeia.tau.beta[k]  *  sum(cadeia.beta.i[k,])  +  m.beta/V.beta) *  dccp.V.beta
-  cadeia.beta.c[k]       = rnorm(1,dccp.m.beta,sqrt(dccp.V.beta))
-  #cadeia.beta.c[k]      = beta_c
-  
-  # update barra de processo
-  setTxtProgressBar(pb, k)
-  
-}; close(pb); depois = Sys.time() - antes; depois #Encerrando barra de processo e tempo da cadeia
+cadeia.alpha.i   <- cadeias$alpha.i
+cadeia.beta.i    <- cadeias$beta.i
+cadeia.tau.c     <- cadeias$tau.c
+cadeia.alpha.c   <- cadeias$alpha.c
+cadeia.beta.c    <- cadeias$beta.c
+cadeia.tau.alpha <- cadeias$tau.alpha
+cadeia.tau.beta  <- cadeias$tau.beta
 
 
 ############################
@@ -435,10 +404,10 @@ dev.off()
 ##################
 
 # Coeficientes:
-coeficientes <- coeficientes_hierarquico2(cadeia.alpha.i[inds,],
+resultado_hierarquico <- coeficientes_hierarquico2(cadeia.alpha.i[inds,],
                                          cadeia.beta.i[inds,],
                                          cadeia.alpha.c,
-                                         cadeia.beta.c, 
+                                         cadeia.beta.c,
                                          cadeia.tau.c,
                                          cadeia.tau.alpha,
                                          cadeia.tau.beta,
@@ -446,9 +415,9 @@ coeficientes <- coeficientes_hierarquico2(cadeia.alpha.i[inds,],
 )
 
 # sumario:
-sumario <- coeficientes[[1]];sumario
+sumario <- resultado_hierarquico[[1]];sumario
 # credibilidade:
-tab <- coeficientes[[2]];tab
+tab <- resultado_hierarquico[[2]];tab
 
 
 

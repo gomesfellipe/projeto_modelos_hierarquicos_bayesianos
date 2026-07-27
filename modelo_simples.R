@@ -4,7 +4,49 @@
 
 # carregando dependencias
 
-source("dependencies.R",encoding = "UTF-8")
+source("gibbs_helpers.R",encoding = "UTF-8")
+
+############################
+#  Amostrador de Gibbs
+############################
+
+# As 3 full conditionals fecham por conjugacao: tau | resto ~ Gama (conjugada
+# com a verossimilhanca Normal) e b0, b1 | resto ~ Normal (conjugada Normal-
+# Normal). Cada iteracao amostra as 3 nessa ordem, condicionando sempre no
+# valor mais recente dos outros dois (Gibbs).
+gibbs_regressao_linear <- function(y, x, n, nsim, mu0, sig0, mu1, sig1, a, b){
+
+  cadeia.b0     = rep(0,nsim)
+  cadeia.b1     = rep(0,nsim)
+  cadeia.tau    = rep(0,nsim)
+
+  # Chutes iniciais:
+  cadeia.b0[1]   = 0
+  cadeia.b1[1]   = 0
+  cadeia.tau[1]  = 1
+
+  pb <- txtProgressBar(min = 0, max = nsim, style = 3) # iniciando barra de processo
+  for (k in 2:nsim){
+
+    # tau | b0, b1, y ~ Gama(n/2 + a, b + SQE/2)
+    cadeia.tau[k]     = rgamma(1, (n/2)+a, b + (sum(( y- cadeia.b0[k-1] - (cadeia.b1[k-1]*x)  )^2)/2) )
+
+    # b0 | b1, tau, y ~ Normal
+    c0                = (n*cadeia.tau[k]) + (1/sig0)
+    m0                = ( cadeia.tau[k]*sum(y) - (cadeia.tau[k]*cadeia.b1[k-1]*sum(x)) + (mu0/sig0)  )   / c0
+    cadeia.b0[k]      = rnorm(1, m0, 1/sqrt(c0))
+
+    # b1 | b0, tau, y ~ Normal
+    c1                =  ( sum(x^2)*cadeia.tau[k] ) + (1/sig1)
+    m1                =  ( (cadeia.tau[k]*sum(x*y)) - (cadeia.tau[k]*cadeia.b0[k]*sum(x))  + (mu1/sig1)  )   /  c1
+    cadeia.b1[k]      = rnorm(1, m1, 1/sqrt(c1))
+
+    setTxtProgressBar(pb, k)
+
+  }; close(pb) #Encerrando barra de processo
+
+  cbind(cadeia.b0,cadeia.b1,cadeia.tau) %>% as.data.frame()
+}
 
 ############################
 #     Gerando a amostra
@@ -51,41 +93,13 @@ b     = 0.1
 #    Valores da cadeia
 ############################
 
-nsim          = 3*10000
-cadeia.b0     = rep(0,nsim)
-cadeia.b1     = rep(0,nsim)
-cadeia.tau    = rep(0,nsim)
-
-# #Chutes iniciais: 
-
-cadeia.b0[1]   = 0
-cadeia.b1[1]   = 0
-cadeia.tau[1]  = 1
+nsim = 3*10000
 
 ############################
 #    Algoritimo da cadeia
 ############################
 
-pb <- txtProgressBar(min = 0, max = nsim, style = 3) # iniciando barra de processo
-for (k in 2:nsim){
-  
-  #Cadeia tau
-  cadeia.tau[k]     = rgamma(1, (n/2)+a, b + (sum(( y- cadeia.b0[k-1] - (cadeia.b1[k-1]*x)  )^2)/2) )
-  
-  # Cadeia B0
-  c0                = (n*cadeia.tau[k]) + (1/sig0)
-  m0                = ( cadeia.tau[k]*sum(y) - (cadeia.tau[k]*cadeia.b1[k-1]*sum(x)) + (mu0/sig0)  )   / c0
-  cadeia.b0[k]      = rnorm(1, m0, 1/sqrt(c0))
-  
-  # Cadeia B1
-  c1                =  ( sum(x^2)*cadeia.tau[k] ) + (1/sig1)
-  m1                =  ( (cadeia.tau[k]*sum(x*y)) - (cadeia.tau[k]*cadeia.b0[k]*sum(x))  + (mu1/sig1)  )   /  c1
-  cadeia.b1[k]      = rnorm(1, m1, 1/sqrt(c1))
-  
-  
-  setTxtProgressBar(pb, k)
-  
-}; close(pb) #Encerrando barra de processo
+cadeias <- gibbs_regressao_linear(y, x, n, nsim, mu0, sig0, mu1, sig1, a, b)
 
 ############################
 #    Resultados da cadeia
@@ -93,7 +107,7 @@ for (k in 2:nsim){
 
 # Juntando resultados:
 inds    <- seq(nsim/2,nsim) # Definindo os indices
-results <- cbind(cadeia.b0,cadeia.b1,cadeia.tau) %>% as.data.frame() %>% .[inds,]
+results <- cadeias[inds,]
 real    <- c(b0,b1,tau)
 name    <- c(expression(beta[0]),expression(beta[1]),expression(tau))
 
@@ -198,43 +212,13 @@ b     = 2
 #    Valores da cadeia
 ############################
 
-nsim          = 3*10000
-cadeia.b0     = rep(0,nsim)
-cadeia.b1     = rep(0,nsim)
-cadeia.tau    = rep(0,nsim)
-
-
-
-# #Chutes iniciais:
-
-cadeia.b0[1]   = 0
-cadeia.b1[1]   = 0
-cadeia.tau[1]  = 1
+nsim = 3*10000
 
 ############################
 #    Algoritimo da cadeia
 ############################
 
-pb <- txtProgressBar(min = 0, max = nsim, style = 3)
-for (k in 2:nsim){
-  
-  #Cadeia tau
-  cadeia.tau[k]     = rgamma(1, (n/2)+a, b + (sum(( y- cadeia.b0[k-1] - (cadeia.b1[k-1]*x)  )^2)/2) )
-  
-  # Cadeia B0
-  c0                = (n*cadeia.tau[k]) + (1/sig0)
-  m0                = ( cadeia.tau[k]*sum(y) - (cadeia.tau[k]*cadeia.b1[k-1]*sum(x)) + (mu0/sig0)  )   / c0
-  cadeia.b0[k]      = rnorm(1, m0, 1/sqrt(c0))
-  
-  # Cadeia B1
-  c1                =  ( sum(x^2)*cadeia.tau[k] ) + (1/sig1)
-  m1                =  ( (cadeia.tau[k]*sum(x*y)) - (cadeia.tau[k]*cadeia.b0[k]*sum(x))  + (mu1/sig1)  )   /  c1
-  cadeia.b1[k]      = rnorm(1, m1, 1/sqrt(c1))
-  
-  
-  setTxtProgressBar(pb, k)
-  
-}; close(pb) #Encerrando barra de processo
+cadeias <- gibbs_regressao_linear(y, x, n, nsim, mu0, sig0, mu1, sig1, a, b)
 
 
 ############################
@@ -243,7 +227,7 @@ for (k in 2:nsim){
 
 # Juntando resultados:
 inds     <- seq(nsim/2,nsim) # Definindo os indices
-results  <- cbind(cadeia.b0,cadeia.b1,cadeia.tau) %>% as.data.frame() %>% .[inds,]
+results  <- cadeias[inds,]
 classico <- c(coefficients(lm(cars)),1/var(lm(cars)$residuals))
 name     <- c(expression(beta[0]),expression(beta[1]),expression(tau))
 
