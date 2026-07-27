@@ -1,0 +1,1609 @@
+\documentclass[12pt,a4paper,header]{abnt}
+
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{amsmath,amssymb,amsfonts}%,undertilde}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[printonlyused]{acronym}
+\usepackage{nomencl}
+\usepackage{comment}
+
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{multicol}
+
+\usepackage{csquotes}
+%\usepackage{natbib}
+
+%Ao invés de ensiná-lo a separar sílaba, podemos não permitir separação silábica
+\sloppy
+\hyphenpenalty=100000
+
+%Não permite linhas orfãs e viúvas no tex
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\definecolor{auburn}{rgb}{0.43, 0.21, 0.1}
+
+\lstset{
+  language=R,
+  basicstyle=\footnotesize,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  backgroundcolor=\color{white},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  rulecolor=\color{black},
+  tabsize=2,
+  captionpos=b,
+  breaklines=true,
+  breakatwhitespace=false,
+  title=\lstname,
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Teoremas, definicoes, etc%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{thm}{Teorema}[section]
+\newtheorem{cor}[thm]{Corolário}
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{defi}[thm]{Definição}
+\newtheorem{exe}[thm]{Exemplo}
+\newtheorem{prop}[thm]{Proposição}
+
+\renewcommand{\ABNTchapterfont}{\bfseries}
+\renewcommand{\ABNTsectionfont}{\bfseries}
+
+\fancypagestyle{logouff}{%
+	\renewcommand{\headrulewidth}{0pt}
+	\fancyhead{}
+	\fancyhead[R]{\includegraphics[width=0.7\textwidth]{logoUFF.pdf}}% Your logo/image
+  	\setlength{\headheight}{30pt}
+  	\setlength{\headsep}{2cm}
+}
+
+
+
+\def\bs{\boldsymbol}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%colocar aqui o nome do aluno%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\autor{Fellipe Carvalho Gomes}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%colocar aqui o título da monigrafia%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\titulo{MODELOS LINEARES HIERÁRQUICOS BAYESIANOS}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%colocar aqui o nome do orientador%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\orientador{Guillermo Coca Velarde}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%colocar aqui o nome do co-orientador, caso exista%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\coorientador{Patrícia Lusié Velozo da Costa}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%colocar aqui a data da apresentacao da monografia%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\data{28 de fevereiro de 2018}
+\data{Fevereiro de 2018}
+%\today
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%nao mexer até a linha 180%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\comentario{Relatório Final do Projeto de Iniciação à Pesquisa submetido ao Departamento de Estatística da Universidade Federal Fluminense.}
+
+\instituicao{Departamento de Estatística \par Instituto de Matemática e Estatística \par Universidade Federal Fluminense}
+
+\local{Niterói - RJ, Brasil}
+
+\capa
+
+\vspace{10cm}
+
+
+%folha de rosto
+%--------------
+
+\begin{titlepage}
+
+\thispagestyle{logouff}
+
+\vspace{2cm}
+
+\hspace{.2\textwidth} % posicionando a minipage
+\begin{minipage}{.7\textwidth}
+
+\begin{flushright}
+
+{\large \bf \ABNTautordata} \\[3cm]
+
+{\Large \bf \ABNTtitulodata}\\[3cm]
+
+{\bf Projeto de Iniciação à Pesquisa}\\[1cm]
+
+\end{flushright}
+
+\begin{espacosimples}
+
+\ABNTcomentariodata
+
+\end{espacosimples}
+
+\vspace{1cm}
+
+\hfill Docentes responsáveis pelo Projeto: \ABNTorientadordata \; e \; \ABNTcoorientadordata \;.
+
+
+\end{minipage}
+
+\vspace{7cm}
+
+\begin{center}
+
+\ABNTlocaldata
+
+\ABNTdatadata
+
+\end{center}
+
+\end{titlepage}
+
+
+% %ficha catalografica
+% %-------------------
+% \newpage
+% \null
+% \vfill
+
+% %\begin{left}
+% \fbox{
+% \includegraphics[scale=1]{ficha_catalografica.pdf}
+% }
+% %\end{center}
+% \vspace{1cm}
+%folha de aprovacao com as assinaturas - Editar os membros da banca
+%------------------------------------------------------------------
+%\begin{folhadeaprovacao}
+
+%\thispagestyle{logouff}
+
+%\hspace{.2\textwidth} % posicionando a minipage
+%\begin{minipage}{.7\textwidth}
+
+%\begin{flushright}
+
+%{\large \bf \ABNTautordata}\\[1cm]
+
+%{\large \bf \ABNTtitulodata}\\[1cm]
+
+%\end{flushright}
+
+%Projeto de Iniciação à Pesquisa sob o título \textit{``\ABNTtitulodata''},
+%defendida por \ABNTautordata~e aprovada em \ABNTdatadata, na cidade de Niterói,
+%no Estado do Rio de Janeiro, pela banca examinadora constituída pelos
+%professores:
+
+%\begin{flushright}
+
+%\begin{espacosimples}
+
+%assinatura
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Preencher os dados dos membros da banca%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\vspace{2cm}
+%\noindent\rule{8cm}{0.4pt}\\
+%{\bf Prof. Luis Guillermo Coca Vellarde }\\
+%Departamento de Estatística -- UFF\\
+
+
+%\vspace{2cm}
+%\noindent\rule{8cm}{0.4pt}\\
+%{\bf Prof. Patrícia Lusié Velozo}\\
+%Departamento de Estatística -- UFF\\
+
+
+% \vspace{2cm}
+% \noindent\rule{8cm}{0.4pt}\\
+% {\bf Profa. Me. Nome do 2o membro da banca}\\
+% Instituicao do 2o membro da banca\\
+
+%\end{espacosimples}
+
+%\end{flushright}
+
+%\vspace{2cm}
+%\hfill Niterói, \ABNTdatadata
+
+%\end{minipage}
+
+
+%\vfill \hfill Niterói, \ABNTdatadata \hspace{1cm}
+
+
+%\end{folhadeaprovacao}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%escreva aqui o resumo do seu trabalho%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{resumo}
+
+% {\color{red} Patrícia: verei novamente essa seção depois}
+
+Este projeto tem como objetivo o estudo sobre a modelagem hierárquica sob a perspectiva de inferência bayesiana. Inicialmente, estudou-se o modelo de regressão linear simples usando o método de Monte Carlo via cadeias de Markov (MCMC) para aprender a estimar os parâmetros de um modelo através da inferência bayesiana os resultados foram comparados com o ajuste do modelo de regressão lienar sobre a perspectiva clássica. Em seguida o projeto envolveu o estudo de modelos lineares hierárquicos. Recorreu-se a dados simulados para analisar a eficiência do procedimento de inferência utilizado e avaliar a sensibilidade da distribuição a priori escolhida.
+%\vspace{1cm}
+%\noindent Palavras-chaves:
+%Aqui entram as palavras chaves.
+
+
+\end{resumo}
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %escreva aqui a sua dedicatória% (opcional)
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \chapter*{Dedicatória}
+% Aqui entra a sua dedicatória.
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %escreva aqui seus agradecimentos% (opcional)
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \chapter*{Agradecimentos}
+% Aqui entram os agradecimentos.
+
+
+
+\tableofcontents{}
+\listoffigures
+% \listoftables
+
+%%%%%
+
+\newpage
+\chapter*{Lista de Abreviações}
+\begin{acronym}
+\acro{DCCP}{distribuições condicionais completas a posterioris}
+\acro{fdp}{função de densidade de probabilidade}
+\acro{iid}{independentes e identicamente distribuídas}
+\acro{MCMC}{Monte Carlo via cadeias de Markov}
+\acro{RN}{Recém nascidos}
+\end{acronym}
+
+%\printnomenclature
+
+\newpage \thispagestyle{empty} % só não numera esta página
+\pagenumbering {arabic}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Introdução} \label{cap:introducao}
+
+Análise de risco de crédito de um cliente, previsão da quantidade de chuva em um dado local e estimativa de erros ou falhas de um novo produto ou serviço são apenas alguns dos exemplos de possíveis assuntos de interesse e nos quais decisões podem ser tomadas, e tais decisões podem ser dadas através da modelagem estatística. Modelar um fenômeno aleatório consiste em realizar afirmações sobre o processo gerador dele e, em Estatística, essas afirmações costumam ser sobre as distribuições das variáveis aleatórias envolvidas na geração do fenômeno de interesse.
+
+A atribuição de uma distribuição pode ser dada em níveis, como, por exemplo, quando as observações pertencem a grupos diferentes e cada grupo tem suas próprias propriedades (média, variância, entre outras). Nesses casos recorre-se a modelos hierárquicos, que também são conhecidos como modelos multiníveis. Aplicações desses modelos podem ser encontradas em várias áreas tais como na Educação, Economia, nas Ciências Sociais e na Saúde. Suponha que demógrafos desejam examinar como diferenças no desenvolvimento da economia nacional podem interferir na relação entre o grau educacional dos adultos e a taxa de fertilidade. Para isso, pode-se utilizar 2 estágios: nível nacional (indicadores econômicos) e nível domiciliar (educação e fertilidade). Ou suponha que o interesse esteja em medir o rendimento escolar dos alunos e, para isso, utiliza-se 4 estágios: os alunos, as turmas, as escolas e os órgãos administradores ou a região.
+
+Muitas vezes, os parâmetros dessas distribuições podem ser desconhecidos e deseja-se inferir sobre eles. Há 2 grandes escolas de inferência: a clássica e a bayesiana. A clássica trata esses parâmetros como quantidades fixas e não atribui distribuições a eles. A estimação dos parâmetros é dada através da função de verossimilhança. A bayesiana atribui uma distribuição, chamada de distribuição a priori, ao conjunto de parâmetros desconhecidos quantificando a sua crença sobre esse conjunto e a estimação dos parâmetros é dada através da distribuição a posteriori, que é  proporcional ao produto da função de verossimilhança com a distribuição a priori. A distribuição a priori é proposta por meio de conhecimentos subjetivos que se tenha sobre os parâmetros. É dito ter uma distribuição a priori informativa, quando há uma forte crença sobre o conjunto de parâmetros. Quando não há crença sobre os parâmetros em questão, distribuições a priori não informativas são utilizadas e, nesse caso, pode-se comparar os resultados obtidos com os da inferência clássica. A inferência bayesiana será o foco desse trabalho.
+
+Quando há mais de um parâmetro desconhecido, a distribuição a posteriori torna-se uma distribuição multivariada. Muitas vezes essa distribuição é desconhecida e/ou muito difícil de ser analisada. O avanço computacional das últimas décadas tem permitido a aplicação de modelos complexos de forma mais realista na representação de fenômenos aleatórios em estudo. Até a década de 80 utilizava-se métodos aproximados de inferência enquanto que na década de 90 os métodos de \ac{MCMC}, e,  mais especificamente, o amostrador de Gibbs e o Metropolis-Hastings, revolucionaram as aplicações no contexto bayesiano. Maiores detalhes podem ser vistos em Robert e Casella (2005) \cite{robert_casella} e em Gamerman e Lopes (2006) \cite{Gamerman06}.
+
+Modelos de regressão linear explicam a variável resposta através de variáveis
+explicativas e supõe que dada as variáveis explicativas, as variáveis respostas são
+independentes. Modelos lineares hierárquicos são generalizações dos modelos de regressão
+linear pois assumem que as observações das unidades pertencentes ao agregado são
+dependentes.
+
+Esse trabalho possui a seguinte estrutura: o Capítulo 2 contém os objetivos deste trabalho; o Capítulo 3 apresenta a metodologia utilizada; no Capítulo 4 gerou-se dados simulados a fim de analisar os modelos propostos e, por fim, o Capítulo 5 apresenta as conclusões desse estudo, seguido por referências utilizados para gerar as amostras e a modelagem.
+
+% {\color{red} conferir no final se continua essa mesma estrutura}
+
+\newpage
+\chapter{Objetivos}
+
+O objetivo deste trabalho é estudar sobre a modelagem linear hierárquica bayesiana. Esse estudo consiste em basicamente 2 (duas) etapas: estudar procedimentos de inferência bayesiana e, em seguida, modelagens lineares hierárquicas. Em seguida, trabalhou-se com dados simulados a fim de avaliar os resultados da inferência sobre os parâmetros desconhecidos.
+
+
+\newpage
+\chapter{Materiais e Métodos}
+
+Este capítulo contém uma breve revisão de alguns conceitos abordados ao longo deste trabalho. Conforme mencionado no Capítulo \ref{cap:introducao}, esse trabalho consiste em modelagem estatísticas e, portanto, distribuições são atribuídas a determinados fenômenos e essas distribuições possuem determinadas quantidades desconhecidas, chamadas de parâmetros, fazendo-se necessário inferir sobre esses parâmetros. Recorreu-se a inferência bayesiana e, portanto, a Seção \ref{Met::infbay} contém uma revisão sobre esse assunto. Em seguida, o interesse consiste em recorrer a modelos lineares hierárquicos e, por isso, a Seção \ref{cap:MRLS} introduz o conceito de modelos lineares e, sem seguida a Seção \ref{Met::modlinearhier} extende esses modelos introduzindo hierarquias.
+
+\section{Inferência bayesiana}\label{Met::infbay}
+
+Um experimento aleatório é um processo que acusa variabilidade em seu resultado. O conjunto de todos os possíveis resultados desse experimento é chamado de espaço amostral. Os subconjuntos do espaço amostral são denominados de eventos aleatórios. Uma variável aleatória é uma função que associa números reais a cada um dos elementos do espaço amostral. Cada elemento passa a ter um único número real associado a ele. Um mesmo número pode estar associado a mais de um elemento. Todos os elementos do espaço amostral tem que ter um número associado.
+
+Seja $Y_i$ uma variável aleatória. O índice $i$ é chamado de unidade amostral e pode representar, por exemplo, um indivíduo, um instante de tempo ou um grupo de idade. Suponha que tenha-se $N$ unidades amostrais e que haja interesse em inferir sobre a média dessa população, representada por $\mu$, e/ou sobre a variância dessa população, representada por $\sigma^2$, por exemplo.
+
+Seja $p(Y_1, \ldots, Y_N|\bs{\theta})$ a função de distribuição ou de densidade da variável resposta dado um conjunto de parãmetros $\bs{\theta}$. Após obter uma amostra de tamanho $n$ da variável resposta, pode-se inferir sobre os parâmetros populacionais. Através da inferência bayesiana, atribui-se uma distribuição a priori para $\bs{\theta}$. Denote essa distribuição por $h(\bs{\theta})$. Dessa forma, a inferência sobre o vetor paramétrico é dada através da distribuição a posteriori $p(\bs{\theta}|y_1, \ldots, y_n)$, sendo $y_i$ o $i$-ésimo valor amostrado da variável de interesse. Pelo Teorema de Bayes, tem-se que a distribuição a posteriori é dada por
+\begin{eqnarray}
+	p(\bs{\theta}|y_1, \ldots, y_n) &=& \frac{h(\bs{\theta})p(y_1, \ldots, y_n|\bs{\theta}) }{p(y_1, \ldots, y_n)},\label{distpost}
+\end{eqnarray}
+sendo $p(y_1, \ldots, y_n)$ chamada de distribuição marginal da variável de interesse.
+
+Por exemplo, suponha que $Y_i \stackrel{iid}{\sim} N\left( \mu, 1\right)$ e que o interesse esteja em estimar a média populacional, dada por $\mu$. A priori, suponha que $\mu \sim N(m_\mu, V_\mu)$. Dessa forma, obtem-se que a distribuição a posteriori é dada por
+\begin{eqnarray}
+	p(\mu|y_1, \ldots, y_n) = \frac{h(\mu)\prod_{i=1}^n{p(y_i|\mu)}}{p(y_1, \ldots, y_n)}, \label{dp}
+\end{eqnarray}
+onde $h(\mu)$ é a \ac{fdp} da distribuição normal com média $m_\mu$ e variância $V_\mu$, $p(y_i|\mu)$ é a \ac{fdp} da distribuição normal com média $\mu$ e variância 1 e $p(y_1, \ldots, y_n)$ é a distribuição marginal das observações que pode ser obtida integrando o parâmetro $\mu$ no numerador, ou seja,
+
+\begin{eqnarray}
+	p(y_1, \ldots, y_n) = \int_{-\infty}^{+\infty}{h(\mu)\prod_{i=1}^n{p(y_i|\mu)} d\mu}.\label{dm}
+\end{eqnarray}
+
+Note que essa a distribuição dada em (\ref{dm}) não depende de $\mu$ e que, por definição de \ac{fdp}, a integral da \ac{fdp} a posteriori, dada em (\ref{dp}), com respeito a $\mu$ tem que ser igual a 1. Sendo assim, tem-se que a distribuição a posteriori é proporcional a
+
+\begin{eqnarray}
+	p(\mu|y_1, \ldots, y_n) &\propto& h(\mu)\prod_{i=1}^n{p(y_i|\mu)}\nonumber \\
+	&\propto& \exp\left\{-\frac{1}{2V_\mu}\left(\mu - m_\mu\right)^2\right\} \exp\left\{-\frac{1}{2}\sum_{i=1}^n\left(y_i - \mu\right)^2\right\}\nonumber \\
+	&\propto& \exp\left\{-\frac{1}{2} \left( n + \frac{1}{v_\mu} \right) \left[\mu^2 - 2\mu \left( n + \frac{1}{v_\mu} \right)^{-1} \left( \frac{m_\mu}{V_\mu} + \sum_{i=1}^n{y_i^2}\right)\right]   \right\}.
+\end{eqnarray}
+
+Integrando a equação acima, obtém-se que
+
+\begin{eqnarray}
+\mu|y_1, \ldots, y_n \sim N\left( \left( n + \frac{1}{v_\mu} \right)^{-1} \left( \frac{m_\mu}{V_\mu} + \sum_{i=1}^n{y_i^2}\right), \left( n + \frac{1}{v_\mu} \right)^{-1} \right).\label{posteriori_normal}
+\end{eqnarray}
+
+
+E, portanto, a inferência sob o parâmetro da média populacional é realizada através dessa distribuição normal. Sendo assim, uma estimativa pontual para o parâmetro $\mu$, sob o paradigma bayesiano, é dada pela média dessa distribuição normal e também pode-se obter estimativas intervalares, que são chamadas de intervalos de crebilidade, no contexto bayesiano.
+
+\subsection{Distribuição a Priori}
+
+Na abordagem bayesiana existem diferentes formas de especificação da distribuição a priori para o vetor paramétrico desconhecido, $\bs{\theta}$. A distribuição a priori deve representar (probabilisticamente) o conhecimento prévio sobre esse vetor antes de observar os resultados de um novo experimento. Com algum conhecimento probabilístico sobre isso é possível definir uma família paramétrica de densidades. Essa família, muitas vezes, possui parâmetros desconhecidos que são chamados de hiperparâmetros.
+
+A distribuição a priori é subjetiva. Ela pode ser determinada através do conhecimento de um especialista e/ou através de dados experimentais anteriores, por exemplo. Uma outra forma de especificar uma distribuição a priori é escolher uma de forma que a distribuição a posteriori e a priori pertençam a mesma família. Quando ambas as distribuições pertencem a mesma classe de distribuições a atualização do conhecimento que se tem sobre $\bs{\theta}$ envolve apenas a mudança nos hiperparâmetros e é dito ter uma distribuição conjugada. Um exemplo de distribuição conjugada foi visto anteriormente na Equação \ref{posteriori_normal}, quando propos-se uma distribuição a priori normal para a média de uma população com distribuição normal e obteve-se uma distribuição a posteriori normal.
+
+A família exponencial é muito importante ao se utilizar distribuições a prioris conjugadas pois através dessa família pode-se encontrar com facilidade a distribuição conjugada e a distribuição a posteriori, tanto para o caso contínuo quanto discreto. Para maiores detalhes, vide Migon (2014)\cite{migon}. %A caracterização dessa classe conjugada de distribuições é tal que a \ac{fdp} da variável de interesse $Y$ possa ser escrita da seguinte forma:
+
+%\begin{eqnarray}
+%p(y|\bs{\theta})=a(y)exp\{u(y)\sum_{l=1}^r\phi_l(\bs{\theta})+b(\bs{\theta})\},
+%\end{eqnarray}
+%sendo $r$ a dimensão do vetor $\bs{\theta}$.
+
+%Após definida a família exponencial de distribuições é possível notar que um exemplo de distribuição a priori conjugada foi mencionado anteriormente ao inferir sobre a média populacional de uma distribuição normal e utilizar uma distribuição normal para esse parâmetro. A distribuição a posteriori, como foi visto na Equação \ref{posteriori_normal}, pertence a mesma família da distribuição a priori, alterando apenas os hiperparâmetros.
+
+Definida a família da distribuição a priori, uma outra discussão é como definir os hiperparâmetros. Através disso é possível ter uma distribuição ''vaga'' ou uma informativa. Se a distribuição estiver concentrada em uma região pequena, é dito ter uma distribuição informativa. Se a variabilidade da distribuição é muito alta, é dito ter uma distribuição não informativa.
+
+Caso o pesquisador tenha uma crença forte, ele utiliza distribuições informativas. Caso contrário, ele recorre a uma distribuição a priori com efeito mínimo na distribuição a posteriori. Distribuições a priori não informativas podem ser obtidas da seguinte forma: aumentando-se a variância da distribuição a priori, utilizando-se  uma distribuição a priori uniforme ou ainda através de distribuições proposta por Jeffreys (1961)\cite{Jeffreys}. Maiores detalhes podem ser encontrados em Ehlers (2003)\cite{Ehlers}.
+
+%Fazendo o uso da distribuição normal a priori (por ser conjugada com a familia de distribuições normais), uma alternativa para tratá-la como uma priori não-informativa é utilizar um valor para a variância muito elevado, o que pode refletir como sendo a incerteza do pesquisador e aumenta o peso dos resultados obtidos através dos dados.
+
+Considere o exemplo em que uma amostra aleatória simples de uma população com distribuição normal com média populacional $\mu=0$ e variância $\sigma^2=1$ é selecionada e dois pesquisadores desejam inferir qual a média populacional, dada por $\mu$. O pesquisador A possui uma forte crença de que a média esteja em torno de $5$ e portanto sua distribuição priori contará com uma variância pequena ($\sigma^2=2$), de modo que sua distribuição a priori seja informativa. Já o pesquisador B resolve declarar sua distribuição a priori com a mesma média $5$ porém sua incerteza o levou a selecionar um alto valor para a variância $\sigma^2=20$. A Figura \ref{fig:priori-posteriori} compara as distribuições a priori e a posteriori dos diferentes pesquisadores. Note que a distribuição a posteriori encontrada pelo pesquisador A sofre maior influência da distribuição a priori uma vez que essa é mais informativa e há um tamanho amostral pequeno.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{priori-posteriori.png}
+\caption{Comparando comportamento da distribuição a posteriori de acordo com a seleção da distribuição a priori}
+\label{fig:priori-posteriori}
+\end{figure}
+
+Quanto maior o tamanho da amostra, menor tende a ser a influência da distribuição a priori. Porém, faz necessário ter cautela ao definir uma distribuição a priori e por isso é desejado fazer uma análise de sensibilidade para estudar os impactos disso na inferência sobre os parâmetros.
+
+
+\subsection{Amostrador de Gibbs}\label{AG}
+
+A distribuição a posteriori de um parâmetro $\bs{\theta}$, dada pela Equação \ref{distpost} contém toda a informação probabilística a respeito deste parâmetro. Quando a forma analítica dessa distribuição é conhecida, então um gráfico da \ac{fdp} pode ilustrar o comportamento probabilístico do parâmetro de interesse e auxiliar em alguma tomada de decisão. Porém, quando a forma analítica não é conhecida ou é muito custosa de ser obtida, pode-se recorrer a métodos de simulação tais como os métodos \ac{MCMC}.
+
+A dependência de Markov é um conceito atribuído ao matemático russo
+Andrei Andreivich Markov que no início do século 20 investigou
+o comportamento da alternância de vogais e consoantes no poema Onegin by
+Poeshkin. Markov desenvolveu um modelo probabilístico onde os resultados sucessivos dependiam em todos os seus predecessores apenas através do antecessor imediato e o modelo permitiu-lhe obter boas estimativas da frequência relativa
+de vogais no poema. Quase ao mesmo tempo o matemático francês
+Henri Poincare estudou sequências de variáveis aleatórias que eram de fato
+Cadeias de Markov, Gamerman (2006)\cite{Gamerman06}.
+
+Uma cadeia de Markov de primeira ordem é um processo estocástico $\{W_0,W_1,...\}$ de tal forma que a distribuição de $W_t$, dados todos os valores anteriores $W_0,...,W_{t-1}$, depende apenas de $W_{t-1}$, ou seja:
+$$  p(W_t |W_0,...,W_{t-1} )=p(W_t | W_{t-1}) . $$
+Os métodos requerem que a cadeia seja:
+
+\begin{itemize}
+\item homogênea: as probabilidades de transição de um estado para outro são invariantes.
+\item irredutível: cada estado pode ser atingido a partir de qualquer outro em um número finito de interações.
+\item aperiódica: não haja estados absorventes.
+\end{itemize}
+
+A função de transição da cadeia, definida por $P(z|w)$, é a função que indica a probabilidade
+da cadeia mover-se para o estado $z$ dado que se encontra no estado $w$ no tempo anterior. Seja uma distribuição $\pi(w), w \in \mathbb{R}^{d}$, conhecida a menos de uma constante multiplicativa, porém complexa o bastante para não ser possível obter uma amostra diretamente. Para gerar amostras de $\pi(w)$, calcula-se e utiliza-se a função de transição $P(z|w)$ que converge para $\pi(w)$ na $k$-ésima iteração. O processo é iniciado em um estado arbitrário de $w$ e após um número suficientemente grande de simulações, as observações geradas são aproximadamente iguais a distribuição alvo $\pi(w)$. Robert e Casela (2005)\cite{robert_casella}
+
+
+A convergência da cadeia de Markov acontece depois de um período chamado de
+aquecimento. Conforme o número de iterações aumenta, os valores iniciais são esquecidos
+pela cadeia até convergir para a distribuição de equilíbrio $\pi(w)$. Na prática, os valores iniciais são descartados, pois são considerados como uma amostra de aquecimento.
+
+
+Com os avanços dos métodos de \ac{MCMC}, surgiu o amostrador de Gibbs, proposto por Geman e Geman (1984)\cite{GemanGeman} e tornou-se popular por  Gelfand e Smith (1990)\cite{GelfandSmith}.
+
+Sejam $\pi(\theta)$ a distribuição da qual se tem o interesse de amostrar onde \textbf{$\theta$} = $(\theta_1, \ldots, \theta_d)$, $\theta_{-j}$ é o vetor composto por todos os elementos de $\theta$, exceto pelo elemento $\theta_j$, $j = 1,\ldots,d$, e $\pi_j(\theta_j)=\pi(\theta_j | \theta_{-j})$ as distribuições condicionais completas, ou seja, distribuições de cada parâmetro condicionada aos demais parâmetros do modelo.
+
+Portanto o amostrador de Gibbs irá gerar sucessivas amostras das distribuições condicionais completas da seguinte de acordo com o algoritmo descrito abaixo:
+
+\begin{enumerate}
+\item Determinar um valor inicial para cada $\theta_j$, definindo $\theta^{(0)}=(\theta^{(0)}_{1},\ldots,\theta^{(0)}_{d}$).
+\item Iniciar o contador de iteração k=1.
+\item Obter um novo valor para $\theta^{(k)}=(\theta^{(k)}_{1},\ldots,\theta^{(k)}_{d}$) pela geração sucessiva das distribuições condicionais completas:
+\begin{eqnarray*}
+\theta^{(k)}_{1} &\sim& \pi (\theta_{1} | \theta_{2}^{(k-1)},\ldots,\theta^{(k-1)}_{d} ), \\
+\theta^{(k)}_{2} &\sim& \pi (\theta_{2} | \theta_{1}^{(k)},\theta_{3}^{(k-1)},\theta_{4}^{(k-1)},\ldots,\theta^{(k-1)}_{d}), \\
+ &\vdots& \\
+\theta^{(k)}_{d} &\sim& \pi (\theta_{d} | \theta_{1}^{(k)},\ldots,\theta^{(k)}_{d-1} )
+\end{eqnarray*}
+\item Atualizar o contador $k=k+1$,
+\item Repetir os passos 3 e 4 até que a convergência seja obtida.
+\end{enumerate}
+
+Como a convergência ocorre após o aquecimento (ou burn-in), é comum usar os valores de $\theta^{(a)}$, $\theta^{(a+t)}$, $ \theta^{(a+2t)}$,\ldots para compor a amostra de $\theta$, sendo $a-1$ o número de iterações iniciais do aquecimento e $t$ o espaçamento utilizado para diminuir a autocorrelação dos parâmetros. Maiores detalhes podem ser vistos em Gamerman (2006)\cite{Gamerman06}.
+
+\section{Modelo de regressão linear simples bayesiano}\label{cap:MRLS}
+
+Embora o objetivo do projeto seja sobre a abordagem utilizando modelos lineares hierárquicos, é fundamental o entendimento sobre modelos lineares bayesianos simples pois a partir destes modelos que apresentam uma relação linear nos parâmetros entre as variáveis e a função de verossimilhança, uma distribuição a priori para os parâmetros também deve ser declarada e este conceito da declaração da distribuição a priori será aprofundado em seguida ao tratar o tema principal deste projeto.
+
+Inspirado no conjunto de dados disponibilizado por Ezekiel (1930)\cite{Ezekiel.cars} e que hoje faz parte do conjunto de banco de dados nativos do R \cite{R} (a base de dados pode ser obtida ao escrever ``cars" no console) um modelo de regressão linear simples pela perspectiva bayesiana será ajustado e para isso primeiramente alguns cálculos precisam ser realizados para que seja possível a implementação dos algoritmos de \ac{MCMC} em seguida.
+
+Os dados informam a velocidade dos carros e as distâncias tomadas para parar, esses dados foram registrados na década de 1920 e são de grande utilidade didática até os dias de hoje, sendo assim, considere que a variável aleatória $Y$ corresponda a velocidade seja a de interesse, comumente chamada de variável resposta e que a variável aleatória $X$ que corresponde a distância tomada para parar seja utilizada para explicar a variável $Y$ que comumente é chamada de variável explicativa ou covariável.
+
+Suponha então um exemplo em que a população de interesse tenha distribuição normal com média $\beta_0 + \beta_1 X$, sendo $\beta_0$ e $\beta_1$ desconhecidos e variância $\sigma^2$ desconhecida. Seja $\tau=\frac{1}{\sigma^2}$ o parâmetro chamado de precisão. O parâmetro $\beta_0$ é conhecido como intercepto ou coeficiente linear e o $\beta_1$ como coeficiente angular. Além disso, suponha que as unidades dessa população sejam \ac{iid}. Dessa forma, tem-se que as unidades dessa população tem a seguinte distribuição:
+\begin{eqnarray}
+Y_i \stackrel{iid}{\sim} N\Big(\beta_0 + \beta_1 X_i,\frac{1}{\tau}\Big),   \label{Met::modlinear}
+\end{eqnarray}
+onde $i=1,2,\ldots,N$.
+
+Obtendo-se uma amostra de tamanho $n$, pode-se inferir sob os parâmetros desconhecidos, $\bs{\theta} = (\beta_0, \beta_1, \tau)$, através da distribuição a posteriori e para obter essa distribuição faz-se necessário calcular a função de verossimilhança, que pode ser obtida da seguinte forma:
+
+\begin{eqnarray}
+p(\bs{y}| \beta_0, \beta_1 , \tau) &=&\prod^n_{i=1} p(y_i | \beta_0, \beta_1, \tau ) \nonumber \\
+%
+ &=& \prod_{i=1}^n \frac{ \sqrt{\tau} }{ \sqrt{2\pi} } exp \Big\{ - \frac{\tau}{2} ( y_i - \beta_0 - \beta_1 x_i )^2 \Big\} , \label{Met::modlinearposteriori}
+\end{eqnarray}
+onde $\bs{y} = (y_1, \ldots, y_n)$ é a amostra coletada.
+
+Considere a priori que os parâmetros sejam independentes e que
+\begin{eqnarray}
+\beta_0 &\sim& N(m_0,\sigma_0^2), \nonumber \\
+\beta_1 &\sim& N(m_1,\sigma_1^2) \mbox{ e } \nonumber \\
+\tau &\sim& G(a,b). \nonumber
+\end{eqnarray}
+
+Dessa forma, tem-se que a distribuição conjunta a priori possui a seguinte forma:
+
+\begin{eqnarray}
+ p(\beta_0, \beta_1 , \tau) &\propto& exp\Big\{-\frac{1}{2\sigma_0^2}( \beta_0 - m_0)^2\Big\} exp\Big\{-\frac{1}{2\sigma_1^2}( \beta_1 - m_1)^2\Big\} \tau^{a-1}exp \{-b \tau\}.
+\end{eqnarray}
+
+Combinando a função de verossimilhança com a distribuição a priori, obtem-se a distribuição a posteriori que é proporcional a:
+\begin{eqnarray}
+p(\beta_0, \beta_1 , \tau|\bs{y}) &\propto& \tau^{\frac{n}{2}+a-1} exp \left\{ -\frac{\tau}{2} \sum^n_{i=1} (y_i - \beta_0 - \beta_1 x_i)^2 - b\tau  - \frac{1}{2\sigma_0^2}(\beta_0-m_0)^2  \right\} \times \nonumber \\
+&& exp\left\{- \frac{1}{2\sigma_1^2}(\beta_1-m_1)^2  \right\} . \label{dp_MRL}
+\end{eqnarray}
+
+Note que essa distribuição é multivariada e não possui forma analítica conhecida. Sendo assim, recorre-se aos métodos de \ac{MCMC}, descritos na Subseção \ref{AG}, para se obter amostras dessa distribuição. E então faz-se necessário obter as \ac{DCCP} de $\beta_0$, $\beta_1$ e $\tau$.
+
+A primeira \ac{DCCP} definida aqui será a de $\tau$. Essa distribuição é facilmente obtida reescrevendo a distribuição a posteriori, dada na Equação (\ref{dp_MRL}), considerando apenas $\tau$ como parâmetro desconhecido e todos os outros parâmetros como conhecidos, ou seja,
+\begin{eqnarray}
+p(\tau | y_1, \ldots, y_n, \beta_0, \beta_1) \propto \tau^{\frac{n}{2}+a-1}exp\Big\{-\tau \Big( \frac{\sum^n_{i=1}(y_i-\beta_0-\beta_1 x_i)^2}{2} + b \Big) \Big\}
+\end{eqnarray}
+
+Logo, a \ac{DCCP} de $\tau$ é
+\begin{eqnarray}
+\tau|y_1, \ldots,y_n,\beta_0, \beta_1 \sim Gama \Big( \frac{n}{2}+a,b+\frac{1}{2} \sum^n_{i=1}(y_i-\beta_0-\beta_1 x_i)^2 \Big)
+\end{eqnarray}
+
+Já para o cálculo da \ac{DCCP} de $\beta_0$ será considerado apenas $\beta_0$ como parâmetro desconhecido e o restante como conhecido, obtendo assim:
+
+\begin{eqnarray*}
+p(\beta_0 | y_1,\ldots,y_n,\tau, \beta_1) &\propto& exp \left\{ -\frac{\tau}{2} \sum^n_{i=1} (\beta_0^2 - 2y_i\beta_0 +2\beta_0\beta_1x_i) - \frac{1}{2\sigma_0^2}(\beta_0^2-2m_0\beta_0)  \right\}
+\nonumber \\
+%&\propto& exp \left\{ -\frac{\tau}{2}  (n\beta_0^2 - 2\beta_0\sum^n_{i=1}y_i +2\beta_0\beta_1\sum^n_{i=1}x_i) - \frac{1}{2\sigma_0^2}(\beta_0^2-2m_0\beta_0)  \right\} \\
+%\nonumber \\
+%&\propto& exp \left\{ -\frac{\tau}{2} n\beta_0^2 + \beta_0\tau\sum^n_{i=1}y_i -\tau\beta_0\beta_1\sum^n_{i=1}x_i - \frac{1}{2\sigma_0^2}\beta_0^2 + \frac{1}{\sigma_0^2}m_0\beta_0  \right\} \\
+%\nonumber
+%&\propto& exp \left\{-\frac{1}{2} \left\{
+%\beta_0^2( \tau n + \frac{1}{\sigma_0^2}) -2\beta_0(\tau\sum^n_{i=1}y_i - \tau\beta_1\sum^n_{i=1}x_i  +\frac{m_0}{\sigma_0^2})    \right\}    \right\} \\
+%\nonumber
+&\propto& exp \left\{-\frac{1}{2} (\tau n + \frac{1}{\sigma_0^2}) \left\{
+\beta_0^2 -2\beta_0 \frac{(\tau\sum^n_{i=1}y_i - \tau\beta_1\sum^n_{i=1}x_i  +\frac{m_0}{\sigma_0^2})}{ \tau n + \frac{1}{\sigma_0^2}}    \right\}    \right\}
+\end{eqnarray*}
+
+e, portanto, tem-se que $\beta_0 | y_1,\ldots,y_n , \tau,\beta_1 \sim N(M_0, C_0)$, sendo $C_0^{-1}= \Big( n\tau +   \frac{1}{\sigma_0^2} \Big)$ e $M_0=\dfrac{(\tau\sum^n_{i=1}y_i - \tau\beta_1\sum^n_{i=1}x_i  +\frac{m_0}{\sigma_0^2})}{ \tau n + \frac{1}{\sigma_0^2}}$.
+
+E por fim, o cálculo da \ac{DCCP} de $\beta_1$ será considerado apenas $\beta_1$ como parâmetro desconhecido e o restante como conhecido, obtendo assim:
+
+\begin{eqnarray*}
+p(\beta_1 | y_1,\ldots,y_n,\tau, \beta_0) &\propto& exp \left\{ -\frac{\tau}{2} \sum^n_{i=1} (\beta_1^2x_i^2 - 2y_i\beta_1x_i +2\beta_0\beta_1x_i) - \frac{1}{2\sigma_1^2}(\beta_1^2-2m_1\beta_1)  \right\} \nonumber \\
+%&\propto& exp \left\{ -\frac{\tau}{2}  (\beta_1^2\sum^n_{i=1}x_i^2 - 2\beta_1\sum^n_{i=1}x_i y_i +2\beta_0\beta_1\sum^n_{i=1}x_i) - \frac{1}{2\sigma_1^2}(\beta_1^2-2m_1\beta_1)  \right\} \nonumber \\
+%&\propto& exp \left\{ -\frac{\tau}{2} \beta_1^2\sum^n_{i=1}x_i^2 + \beta_1\tau\sum^n_{i=1}x_i y_i -\tau\beta_0\beta_1\sum^n_{i=1}x_i - \frac{1}{2\sigma_1^2}\beta_1^2 + \frac{1}{\sigma_1^2}m_1\beta_1  \right\} \nonumber \\
+%&\propto& exp \left\{-\frac{1}{2} \left\{ \beta_1^2( \tau \sum^n_{i=1}x_i^2 + \frac{1}{\sigma_1^2}) -2\beta_1(\tau\sum^n_{i=1}x_i y_i  - \tau\beta_0\sum^n_{i=1}x_i + \frac{m_1}{\sigma_1^2})    \right\}    \right\} \nonumber \\
+&\propto& exp \left\{-\frac{1}{2} ( \tau \sum^n_{i=1}x_i^2 + \frac{1}{\sigma_1^2}) \left\{
+\beta_1^2 -2\beta_1 \frac{\tau\sum^n_{i=1}x_i y_i  - \tau\beta_0\sum^n_{i=1}x_i + \frac{m_1}{\sigma_1^2}}{\tau \sum^n_{i=1}x_i^2 + \frac{1}{\sigma_1^2}}    \right\}    \right\}
+\end{eqnarray*}
+
+e, portanto, tem-se que $\beta_1 | y_1,\ldots,y_n , \tau,\beta_0 \sim N(M_1, C_1)$, sendo $C_1^{-1}= \Big( \tau \sum^n_{i=1}x_i^2 + \frac{1}{\sigma_1^2} \Big)$ e $M_1=\frac{\tau\sum^n_{i=1}x_i y_i  - \tau\beta_0\sum^n_{i=1}x_i + \frac{m_1}{\sigma_1^2}}{\tau \sum^n_{i=1}x_i^2 + \frac{1}{\sigma_1^2}}$.
+
+Ao finalizar essas contas já é possível realizar a implementação do algoritmo do método de \ac{MCMC}, os resultados desses ajustes serão discutidos na seção \ref{analise_dos_resultados} de análise e resultados em \ref{resultados:MLS} no momento em que os resultados do amostrados de Gibbs para o modelo linear bayesiano forem apresentados.
+
+
+
+
+
+\section{Modelo de regressão linear hierárquico bayesiano} \label{Met::modlinearhier}
+
+Em muitos casos para a descrição de fenômenos aleatórios complexos não é possível a declaração de um modelo em apenas uma ``frase", como foi feito na Seção \ref{Met::modlinear}. Em diversas áreas do conhecimento é possível notar que existem dados com estrutura hierárquica como por exemplo na Atuária, onde modelos hierárquicos são formulados para análises que envolvem a teoria do risco coletivo (aplicados a seguros e previdência), na Demografia onde os modelos hierárquicos têm utilidade na modelagem da dinâmica populacional, ou mesmo em vário outros domínios de aplicação Estatística como, por exemplo, Avaliação de Desempenho, Curvas de Crescimento, Geoestatística, etc. Migon (2008) \cite{MigonMH}
+
+O avanço dos métodos estatísticos em conjunto com o avanço exponencial da tecnologia tem  tornado possível a elaboração de modelos altamente estruturados para descrever da maneira mais realista possível tais eventos dos quais muitas vezes os dados se distribuem de maneira diferente e em diferentes níveis
+
+A formulação geral para os modelos hierárquicos utilizando a abordagem bayesiana com o conceito de permutabilidade de Finetti (1972) foi apresentado primeiramente por Lindley e Smith (1972) \cite{LindleySmith} quando foi mostrado que as estimativas bayesianas podem ser por vezes mais concentradas do que as estimativas da abordagem de mínimos quadrados.
+
+A estrutura hierárquica pode ser concebida de maneiras diferentes como apresentado em Migon (2008) \cite{MigonMH}, quando existe hierarquia na variável resposta ou no caso da declaração da distribuição a priori, pois em ambos os casos apresenta-se unidades de análise em diferentes níveis.
+
+A abordagem que será utilizada a seguir envolve um exemplo do conceito de priori hierárquica que é essencial na definição dos modelos lineares hierárquicos, Migon e Gamerman (1999) \cite{MigonMH} argumentam que este procedimento pode ser utilizado para facilitar sua especificação e descrevem como construir a distribuição priori em estágios, combinando informações estruturais (para divisão dos estágios) com informações puramente subjetivas (para a especificação de cada estágio).
+
+Sendo assim, como no modelo de regressão linear simples bayesiano calculado na Seção \ref{Met::modlinear}, estes modelos estocasticamente complexos novamente irão demandar o uso de métodos númericos eficientes para a integração e otimização.
+
+Considere que a variável aleatória $Y_{i,j}$ que representa a variável resposta da i-ésima observação ao longo de $T=5$ intervalos de tempo e seja a variável aleatória $X_j$ numero de dias decorridos ao longo das 5 intervalos de tempo que será utilizada para explicar a variável $Y_{i,j}$ e, comumente, chamada de variável explicativa ou covariável.
+
+Suponha que a população de interesse tenha distribuição normal com média $\alpha_i +\beta_i x_j$, sendo $\alpha_i$ e $\beta_i$ desconhecidos e variância $\sigma^2$ desconhecida. Seja $\tau_c=\frac{1}{\sigma^2}$ o parâmetro chamado de precisão. O parâmetro $\alpha_i$ é o intercepto (ou coeficiente linear) e o $\beta_i$ é o coeficiente angular. Além disso, suponha que as unidades dessa população sejam \ac{iid}.
+
+Dessa forma, tem-se que as unidades dessa população tem a seguinte distribuição:
+
+\begin{eqnarray}
+Y_{i,j} & \sim & N( \alpha_i +\beta_i x_j , \tau_c^{-1})
+\label{Met::modhierarquico}
+\end{eqnarray}
+
+Note que o conceito de priori hierárquica será utilizada aqui na definição desse modelo linear hierárquico da seguinte maneira:
+
+\begin{eqnarray}
+\alpha_{i}  \sim  N( \alpha_c , \tau_\alpha^{-1}) & \tau_c  \sim  G( a_\tau , b_\tau)    \nonumber \\
+\beta_{i}  \sim  N( \beta_c , \tau_\beta^{-1})    & \tau_\alpha  \sim G( a_\alpha , b_\alpha)    \nonumber \\
+\alpha_{c}  \sim  N( m_\alpha , V_\alpha)         & \tau_\beta  \sim G( a_\beta , b_\beta)    \nonumber \\
+\beta_{c}  \sim  N( m_\beta , V_\beta)               \label{priorisMLH}
+\end{eqnarray}
+onde $m_\alpha, V_\alpha, m_\beta, V_\beta, a_\tau, b_\tau, a_\alpha, b_\alpha, a_\beta, b_\beta$ são parâmetros conhecidos.
+
+
+Obtendo-se uma amostra de tamanho $n$, pode-se inferir sob os parâmetros desconhecidos, $\bs{\theta} = (\alpha_i, \beta_i, \tau_c, \alpha_c, \beta_c, \tau_\alpha, \tau_\beta)$ através da distribuição a posteriori e para obter essa distribuição faz-se necessário calcular novamente a função de verossimilhança deste modelo. Considere então:
+
+\begin{eqnarray}
+\bs{Y} &=& {Y_{i,j} \text{ ; onde: }i=1,...,n\text{ e }j=1,...,T} \\
+\bs{\alpha} &=& {\alpha_1,...,\alpha_n}      \\
+\bs{\beta} &=& {\beta_1,...,\beta_n}
+\end{eqnarray}
+
+onde, o vetor de parâmetros desconhecidos será:
+
+$$
+\bs{\theta}={\bs{\alpha},\bs{\beta}, \alpha_c, \beta_c, \tau_c, \tau_\alpha, \tau_\beta}
+$$
+
+Logo, a função de verossimilhança será:
+
+\begin{eqnarray}
+p(\bs{y} | \bs{\alpha}, \bs{\beta}, \tau_c) &=& \prod^n_{i=1} \prod^n_{j=1} p(y_{i,j} |
+\alpha_i, \beta_i, \tau_c)\\
+&=&(\frac{\tau}{2\pi})^\frac{nT}{2} exp\{-\frac{\tau}{2} \sum^n_{i=1} \sum^T_{j=1} (y_{i,j} -\alpha_i -\beta_ix_j )^2 \}
+\end{eqnarray}
+e seja $\theta_{-\mu}$ o vetor após excluir o elemento $\mu$ desse vetor.
+
+Considerando o conceito de priori hierárquica cujo os parâmetros sejam independentes e que possuam as distribuições de probabilidade apresentadas em \ref{priorisMLH}, tem-se que a distribuição conjunta a priori possui a seguinte forma:
+
+\begin{eqnarray}
+p(\bs{\theta}) &=& \prod^n_{i=1} [ p(\alpha_i | \alpha_c, \tau_\alpha) p(\beta_i | \beta_c, \tau_\beta )]p(\alpha_c)p(\beta_c)p(\tau)p(\tau_\alpha)p(\tau_\beta) \\
+%
+&\propto& \tau_\alpha^{\frac{n}{2}} exp\{ -\frac{\tau_\alpha}{2} \sum^n_{i=1}(\alpha_i-\alpha_c)^2
+\tau_\beta^{\frac{n}{2}} exp\{ -\frac{\tau_\beta}{2} \sum^n_{i=1}(\beta_i-\beta_c)^2\} \\
+%
+&\times& exp\{ -\frac{1}{2 V_\alpha} (\alpha_c-m_\alpha)^2 \}  exp\{ -\frac{1}{2 V_\beta } (\beta_c-m_\beta)^2 \} \\
+%
+&\times& \tau_c^{a_\tau -1} exp\{ -\tau_c b_\tau \} \tau_\alpha^{a_\alpha -1} exp\{ -\tau_\alpha b_\alpha \} \tau_\beta^{a_\beta -1} exp\{ -\tau_\beta b_\beta \}
+\end{eqnarray}
+
+Portanto, combinando a função de verossimilhança com a distribuição a priori, obtem-se que a distribuição a posteriori é proporcional a:
+
+\begin{eqnarray}
+p(\bs{\theta} | \bs{y} ) &\propto&  p(\bs{y} | \bs{\theta}  ) p(\bs{\theta}  )
+\end{eqnarray}
+
+Assim como em \ref{dp_MRL}, essa distribuição é multivariada e não possuirá uma forma análitica conhecida, sendo assim serão utilizados métodos de \ac{MCMC}, descritos na Subseção \ref{AG}, para se obter amostras dessa distribuição. Faz-se necessário obter as \ac{DCCP} de $\alpha_i$, $\beta_i$ e $\tau_c$, $\alpha_c$, $\beta_c$ e $\tau_\alpha$, $\tau_\beta$, portanto veja os cálculos dessas distribuições a seguir:
+
+\ac{DCCP} de $\tau_c$:
+
+\begin{eqnarray}
+p(\tau_c | \bs{y}, \bs{\alpha}, \bs{\beta},\alpha_c,\beta_c, \tau_\alpha, \tau_\beta) &\propto& \tau_c^\frac{nT}{2} exp\{ - \frac{\tau_c}{2}  \sum^n_{i=1} \sum^T_{j=1} (y_{i,j} -\alpha_i - \beta_i x_j)^2 \} \\
+&\times& \tau_c^{a_\tau - 1} exp\{ -b_\tau \tau_c \}
+\end{eqnarray}
+Logo,
+
+\begin{eqnarray}
+\tau_c | \bs{y}, \theta_{-\tau_c}  &\sim& G(\frac{nT}{2}+a_\tau , b_\tau + \frac{1}{2}\sum^n_{i=1} \sum^T_{j=1} (y_{i,j} -\alpha_i - \beta_ix_j)^2 )
+\end{eqnarray}
+
+\ac{DCCP} de $\alpha_i$:
+
+\begin{eqnarray}
+p(\alpha_i | \bs{y}, \theta_{-\alpha_i}) &\propto& exp\{ -\frac{\tau_c}{2} \sum^T_{j=1} (y_{i,j} -\alpha_i-  \beta_ix_j)^2  \} \exp\{ - \frac{\tau_\alpha}{2} (\alpha_i-\alpha_c)^2 \}
+\\
+%
+&\propto& exp\{ -\frac{\tau_c}{2} \sum^T_{j=1} (-2y^*_{i,j}\alpha_i + \alpha_i^2) - \frac{\tau_\alpha}{2} (\alpha_i^2-2\alpha_i\alpha_c) \} \\
+%
+&\propto& exp\{ -\frac{1}{2} [ (\tau_c T +\tau_\alpha)\alpha_i^2 - 2\alpha_i (\tau_c \sum^T_{j=1} y^*_{i,j} +\tau_\alpha \alpha_c  ) ]  \} \\
+%
+&\propto& exp\{ -\frac{1}{2} (\tau_c T +\tau_\alpha) [ \alpha_i^2 - 2\alpha_i(\tau_c T +\tau_\alpha)^{-1}(\tau_c \sum^T_{j=1} y^*_{i,j} +\tau_\alpha \alpha_c  ) ]  \} \\
+\end{eqnarray}
+logo,
+
+\begin{eqnarray}
+\alpha_i | \bs{y}, \theta_{-\alpha_i}  &\sim& N( (\tau_c T +\tau_\alpha)^{-1}(\tau_c \sum^T_{j=1} y^*_{i,j} +\tau_\alpha \alpha_c  ) , (\tau_c T +\tau_\alpha)^{-1}   )
+\end{eqnarray}
+
+\ac{DCCP} de $\alpha_c$:
+
+\begin{eqnarray}
+p(\alpha_c | \bs{y}, \theta_{\alpha_c}) &\propto& exp\{ -\frac{\tau_\alpha}{2} \sum^n_{i=1} (\alpha_i -\alpha_c)^2  \} \exp\{ - \frac{1}{2V_\alpha} (\alpha_c-m_\alpha)^2 \}
+\\
+%
+&\propto& exp\{ -\frac{\tau_\alpha}{2} \sum^n_{i=1} (-2\alpha_i\alpha_c + \alpha_c^2) - \frac{1}{2V_\alpha} (\alpha_c^2-2m_\alpha\alpha_c) \} \\
+%
+&\propto& exp\{ -\frac{1}{2} [ (\tau_\alpha n +\frac{1}{V\alpha})\alpha_c^2 - 2\alpha_c (\tau_\alpha \sum^n_{i=1}  \alpha_i+\frac{1}{V_\alpha}m_\alpha) ]  \} \\
+%
+&\propto& exp\{ -\frac{1}{2} (\tau_\alpha n +\frac{1}{V_\alpha}) [ \alpha_c^2 - 2\alpha_c(\tau_\alpha n +\frac{1}{V_\alpha})^{-1}(\tau_\alpha \sum^n_{i=1} \alpha_i + \frac{m_\alpha}{V_\alpha} ) ]  \} \\
+\end{eqnarray}
+logo,
+
+\begin{eqnarray}
+\alpha_c | \bs{y}, \theta_{-\alpha_c}  &\sim& N( (\tau_\alpha n +\frac{1}{V_\alpha})^{-1}(\tau_\alpha \sum^n_{i=1} \alpha_i + \frac{m_\alpha}{V_\alpha} ),(\tau_\alpha n +\frac{1}{V_\alpha})^{-1}  )
+\end{eqnarray}
+
+\ac{DCCP} de $\tau_\alpha$:
+
+\begin{eqnarray}
+p(\tau_\alpha | \bs{y}, \theta_{-\tau_\alpha} ) &\propto& \tau_\alpha^\frac{n}{2} exp\{ - \frac{\tau_\alpha}{2}  \sum^n_{i=1} (\alpha_{i} -\alpha_c)^2 \}  \tau_\alpha^{a_\alpha - 1} exp\{ -b_\alpha \tau_\alpha \}
+\end{eqnarray}
+Logo,
+
+\begin{eqnarray}
+\tau_\alpha | \bs{y}, \theta_{-\tau_\alpha}  &\sim& G(\frac{n}{2}+a_\alpha , b_\alpha + \frac{1}{2}\sum^n_{i=1} (\alpha_i -\alpha_c)^2 )
+\end{eqnarray}
+
+\ac{DCCP} de $\beta_i$:
+
+\begin{eqnarray}
+p(\beta_i | \bs{y}, \theta_{-\beta_i}) &\propto& exp\{ -\frac{\tau_c}{2} \sum^T_{j=1} (y_{i,j} -\alpha_i-  \beta_ix_j)^2  \} \exp\{ - \frac{\tau_\beta}{2} (\beta_i-\beta_c)^2 \}
+\\
+%
+&\propto& exp\{ -\frac{\tau_c}{2} \sum^T_{j=1} (\beta_i^2 x_j^2 - 2 y_{i,j}\beta_ix_j + 2\alpha_i \beta_i x_j) - \frac{\tau_\beta}{2} (\beta_i^2-2\beta_i\beta_c) \} \\
+%
+&\propto& exp\{ -\frac{\tau_c}{2}  (\beta_i^2 \sum^T_{j=1} x_j^2 - 2\beta_i\sum^T_{j=1}y_{i,j}x_j + 2\alpha_i \beta_i \sum^T_{j=1} x_j) - \frac{\tau_\beta}{2} (\beta_i^2-2\beta_i\beta_c) \} \\
+%
+&\propto& exp\{ -\frac{1}{2}  (\tau_c\beta_i^2 \sum^T_{j=1} x_j^2 - 2\tau_c\beta_i\sum^T_{j=1}y_{i,j}x_j + 2\tau_c\alpha_i \beta_i \sum^T_{j=1} x_j) +  \tau_\beta\beta_i^2-2\tau_\beta\beta_i\beta_c \} \\
+%
+&\propto& exp\{ -\frac{1}{2}  (\tau_c \sum^T_{j=1} x_j^2 + \tau_\beta)\beta_i^2 - 2\beta_i(\tau_c\sum^T_{j=1}y_{i,j}x_j - \tau_c\alpha_i \sum^T_{j=1} x_j + \tau_\beta\beta_c)  \}
+\end{eqnarray}
+logo,
+
+\begin{eqnarray}
+\beta_i | \bs{y}, \theta_{-\beta_i}  &\sim& N((\tau_c \sum^T_{j=1} x_j^2 + \tau_\beta)^{-1} (\tau_c\sum^T_{j=1}y_{i,j}x_j - \tau_c\alpha_i \sum^T_{j=1} x_j + \tau_\beta\beta_c) , (\tau_c \sum^T_{j=1} x_j^2 + \tau_\beta)^{-1}  )
+\end{eqnarray}
+
+\ac{DCCP} de $\beta_c$:
+
+\begin{eqnarray}
+p(\beta_c | \bs{y}, \theta_{\beta_c}) &\propto& exp\{ -\frac{\tau_\beta}{2} \sum^n_{i=1} (\beta_i -\beta_c)^2  \} \exp\{ - \frac{1}{2V_\beta} (\beta_c-m_\beta)^2 \}
+\\
+%
+&\propto& exp\{ -\frac{\tau_\beta}{2} \sum^n_{i=1} (-2\beta_i\beta_c + \beta_c^2) - \frac{1}{2V_\beta} (\beta_c^2-2m_\beta\beta_c) \} \\
+%
+&\propto& exp\{ -\frac{1}{2} [ (\tau_\beta n +\frac{1}{V\beta})\beta_c^2 - 2\beta_c (\tau_\beta \sum^n_{i=1}  \beta_i+\frac{1}{V_\beta}m_\beta) ]  \} \\
+%
+&\propto& exp\{ -\frac{1}{2} (\tau_\beta n +\frac{1}{V_\beta}) [ \beta_c^2 - 2\beta_c(\tau_\beta n +\frac{1}{V_\beta})^{-1}(\tau_\beta \sum^n_{i=1} \beta_i + \frac{m_\beta}{V_\beta} ) ]  \} \\
+\end{eqnarray}
+logo,
+
+\begin{eqnarray}
+\beta_c | \bs{y}, \theta_{-\beta_c}  &\sim& N( (\tau_\beta n +\frac{1}{V_\beta})^{-1}(\tau_\beta \sum^n_{i=1} \beta_i + \frac{m_\beta}{V_\beta} ),(\tau_\beta n +\frac{1}{V_\beta})^{-1}  )
+\end{eqnarray}
+
+\ac{DCCP} de $\tau_\beta$:
+
+\begin{eqnarray}
+p(\tau_\beta | \bs{y}, \theta_{-\tau_\beta} ) &\propto& \tau_\beta^\frac{n}{2} exp\{ - \frac{\tau_\beta}{2}  \sum^n_{i=1} (\beta_{i} -\beta_c)^2 \}  \tau_\beta^{a_\beta - 1} exp\{ -b_\beta \tau_\beta \}
+\end{eqnarray}
+Logo,
+
+\begin{eqnarray}
+\tau_\beta | \bs{y}, \theta_{-\tau_\beta}  &\sim& G(\frac{n}{2}+a_\beta , b_\beta + \frac{1}{2}\sum^n_{i=1} (\beta_i -\beta_c)^2 )
+\end{eqnarray}
+
+Como pode ser visto, diferente da modelagem linear simples, a modelagem hierárquica exige que os dados sejam estruturados de forma agrupada em diferentes níveis assim como foi calculado as \ac{DCCP}s. Em cada nível, as variáveis explicativas estão associadas às outras variáveis dentro do mesmo nível e, possivelmente, às variáveis de níveis inferiores, de tal modo que os níveis mais baixos sejam independentes dos níveis mais altos.
+
+Portanto, com esses resultados calculados será possível implementar os métodos de \ac{MCMC} tanto para o modelo de regressão linear simples, como mencionados na Seção \ref{Met::modlinear} anterior, quanto para o modelo de regressão linear hierárquico apresentado nesta seção.
+
+
+% {\color{red}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%pensando em adaptar o codigo para este modelo do tcc (em marrom)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Fellipe: Tudo que foi escrito abaixo desta parte em marrom, na cor azul, foi pensando em adaptar o codigo para este modelo do tcc (em marrom) , no seguinte formato:
+
+% {\color{auburn}
+
+% Suponha que deseja-se modelar a variável resposta "Frequência Cardíaca" de acordo com a matrix $\mathbf{X_{ij}}$ com 7 variáveis explicativas no primeiro nível e o segundo nível é composto pelo vetor $x_j$ que determina o instante da observação. A amostra é composta por $n_j$=50 \ac{RN}s e $j=1,2,...,22$ instantes (1 e 2 correspondem ao período base; do 3 ao 12 corresponde à intervenção e do 13 ao 22 corresponde ao intervalo posterior a intervenção). Portanto, o modelo hierárquico proposto é:
+
+% \begin{eqnarray}
+% Y_{i,j} & \sim & N(\beta_{0j}+\beta_{1j}X_{1j}+\beta_{2j}X_{2j}+\beta_{3j}X_{3j}+\beta_{4j}X_{4j}+\beta_{5j}X_{5j}+\beta_{6j}X_{6j}+\beta_{7j}X_{7j}, \frac{1}{\tau})
+% \end{eqnarray}
+
+% onde: i=1,...,$n_j$=50 \ac{RN} e j= 1,...,m=22 instantes.
+
+% As variáveis que compõe o modelo serão as seguintes:
+
+% \begin{itemize}
+% \item $Y_{i,j}$ = Frequencia Cardíaca do i-ésimo bebê no j-ésimo instante;
+% \item $x_{j}$: j-ésimo instante, onde $j= t_0,t_1,t_2,...,t_{22}$;
+% \item $X_{1i}$= $\begin{cases}
+%              1, & \mbox{se intervenção foi leite materno} \\
+%              0, & \mbox{caso contrário.}
+%        \end{cases}$
+% \item $X_{2i}$= $\begin{cases}
+%              1, & \mbox{se intervenção foi amamentação} \\
+%              0, & \mbox{caso contrário.}
+%        \end{cases}$
+% \item $X_{3i}$= $\begin{cases}
+%              1, & \mbox{se intervenção foi contato pele a pele} \\
+%              0, & \mbox{caso contrário.}
+%        \end{cases}$
+% \item $X_{4i}$ = idade gestacional em dias do i-ésimo bebê
+% \item $X_{5i}$ = Glicemia do i-ésimo bebê
+% \item $X_{6i}$ = Tempo de vida do i-ésimo na coleta dos dados
+% \item $X_{7i}$ = número de procedimentos dolorosos no i-ésimo bebê.
+% \item $X_{j}$= j-ésimo instante da observação e
+% \end{itemize}
+
+
+
+% Além disso, como se trata de um modelo hierárquico, o segundo nível será afetado pela variável explicativa $x_j$ onde cada parâmetro $\beta$ será definido da seguinte maneira::
+
+% \begin{eqnarray}
+% \beta_{0j}=\gamma_{00}+\gamma_{01}x_j \nonumber & \beta_{1j}=\gamma_{10}+\gamma_{11}x_j \nonumber \\
+% \beta_{2j}=\gamma_{20}+\gamma_{21}x_j \nonumber & \beta_{3j}=\gamma_{30}+\gamma_{31}x_j \nonumber \\
+% \beta_{4j}=\gamma_{40}+\gamma_{41}x_j \nonumber & \beta_{5j}=\gamma_{50}+\gamma_{51}x_j \nonumber \\
+% \beta_{6j}=\gamma_{60}+\gamma_{61}x_j  & \beta_{7j}=\gamma_{70}+\gamma_{71}x_j  \label{mod:prioristcc}
+% \end{eqnarray}
+
+
+% Sendo assim, tais equações apresentadas em \ref{mod:prioristcc} formam o modelo do nível 2 (nível dos instantes). Tal definição retrata que os diferentes instantes não possuem o mesmo intercepto nem a mesma inclinação, além disso, e o componente $X_{j}$ definido desta maneira determina o instante da observação.
+
+% \begin{itemize}
+
+% \item $\beta_{0j}$ = Intercepto do modelo no intante $j$
+% \item $\beta_{1j}$ = efeito da variável Intervenção leite materno
+% \item $\beta_{2j}$ = efeito da variável Intervenção amamentação
+% \item $\beta_{3j}$ = efeito da variável Intervenção contato pele a pele
+% \item $\beta_{4j}$ = efeito esperado na frequencia cardíaca quando $X_{4ij}$ aumenta em uma unidade
+% \item $\beta_{5j}$ = efeito esperado na frequencia cardíaca quando $X_{5ij}$ aumenta em uma unidade
+% \item $\beta_{6j}$ = efeito esperado na frequencia cardíaca quando $X_{6ij}$ aumenta em uma unidade
+% \item $\beta_{7j}$ = efeito esperado na frequencia cardíaca quando $X_{7ij}$ aumenta em uma unidade
+% \end{itemize}
+
+% Continuar interpretação dos parâmetros daqui em diante para a monografia
+
+% }
+
+% }
+
+% A modelagem através dos modelos hierárquicos exige que os dados sejam estruturados de forma agrupada em diferentes níveis. Em cada nível, as variáveis explicativas estão associadas às outras variáveis dentro do mesmo nível e, possivelmente, às variáveis de níveis inferiores, de tal modo que os níveis mais baixos sejam independentes dos níveis mais altos.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%pensando em adaptar o codigo  (em azul)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% {\color{blue}
+
+% Dessa vez suponha que a população de interesse tenha distribuição normal com média $\beta_{0j}+\beta_{1j}X_{ij}$ sendo $\beta_{0j}$ e $\beta_{1j}$
+% desconhecidos e com variância $\sigma^2$ também desconhecida onde j são diferentes intervalos de tempo de onde foram retiradas $n_j$ observações de cada. Seja $\tau=\frac{1}{\sigma^2}$ o parâmetro chamado de precisão. O parâmetro  $\beta_{0j}$ é o intercepto para a j-ésimo intervalo e o parâmetro $\beta_{1j}$ indica a mudança esperada na variável resposta quando $X_{ij}$ aumenta em uma unidade. Além disso suponha que as unidades dessa população sejam independentes e identicamente distribuídas (iid) e que a variável $X_j$ represente o instante da observação. (Variando de 0 à 22)
+
+% Dessa forma tem-se que as unidades dessa população tem a seguinte distribuição que compõe o chamado ``modelo do nível 1" (nível da observação):
+
+% \begin{eqnarray}
+% Y_{ij} \stackrel{iid}{\sim} N\Big(\beta_{0j} + \beta_{1j} X_{ij},\frac{1}{\tau}\Big), \label{Yij1}
+% \end{eqnarray}
+% onde $i=1,2,\ldots,N_j$ e $j=1,2,\ldots,m$.
+
+% E o intercepto $\beta_0$ e a inclinação $\beta_1$ podem ser modelados da seguinte forma:
+
+% \begin{eqnarray}
+% \beta_{0j} &=& \gamma_{00}+\gamma_{01} X_j  ,  \label{beja1j}\\
+% \beta_{1j} &=& \gamma_{10}+\gamma_{11} X_j  \label{beja0j}
+% \end{eqnarray}
+% onde :
+
+% Tais equações apresentadas em \ref{beja0j} e \ref{beja1j} formam o modelo do nível 2 (nível dos instantes). Tal definição retrata que os diferentes instantes não possuem o mesmo intercepto nem a mesma inclinação, além disso, e o componente $X_{j}$ definido da seguinte maneira:
+
+% % \begin{eqnarray}
+% % W_j =\begin{cases}
+% %              1, & \mbox{para } j\mbox{-ésimo} \mbox{ grupo} \mbox{ ;} \\
+% %              0, & \mbox{caso contrário.}
+% %        \end{cases}
+% % \end{eqnarray}
+
+% Ajuda a explicar estas diferenças. Além disso, os outros parâmetros:
+
+% \begin{itemize}
+% \item $\beta_{0j}$: Intercepto geral do modelo
+% \item $\beta_{1j}$: Coeficiente de inclinação associada a variável $x$, representa o impacto da variável explicativa na variação da variável resposta
+% \item $\gamma_{00}$: valor esperado dos interceptos quando o instante é zero
+% \item $\gamma_{01}$: coeficiente de inclinação associado ao j-ésimo instante, representa o impacto do instante na variação de $\beta_{0j}$
+% \item $\gamma_{10}$: valor esperando das inclinações quando o instante é zero
+% \item $\gamma_{11}$: coeficiente de inclinação associado ao j-ésimo instante, representa o impacto do instante na variação de $\beta_{1j}$
+
+% % \item $\tau_{00}$: variância populacional dos interceptos corrigida por $W_j$
+% % \item $\tau_{11}$: variância populacional dos inclinações corrigida por $W_j$
+
+% % \item $\tau_{01}$: covariância entre $\beta_0$ e $\beta_1$ {\color{red} Estou considerando que são independentes..}
+
+% \end{itemize}
+
+% % Sob este modelo $\tau_{00}$ e $\tau_{11}$ são agora componentes de variância condicional, pois neste ajuste a variável $W_j$ está sendo considerada.
+
+% Substituindo \ref{beja0j} e \ref{beja1j} em \ref{Yij1} é obtida a seguinte equação:
+
+% \begin{eqnarray}
+% Y_{ij} = \gamma_{00} + \gamma_{01}X_j + \gamma_{10} X_{ij} + \gamma_{11} X_j X_{ij}
+% \end{eqnarray}
+
+% No modelo acima, os coeficientes apresentam a seguinte interpretação: $Y_{ij}$ representa a variável resposta média da i-ésima observação do j-ésimo instante; $\beta_{0j}$ é o coeficiente de inclinação associado a variável $X$, representa o impacto médio da variável explicativa sob as observações, que também é definido como variável aleatória; $\gamma_{00}$,$\gamma_{01}$,$\gamma_{10}$,$\gamma_{11}$ são os parâmetros a serem estimados
+
+
+
+% Após obter-se uma amostra de tamanho $n=\sum n_j$, pode-se inferir sob os parâmetros desconhecidos $\bs{\theta}=(\beta_{0j}, \beta_{1j} , \tau, \gamma_{00}, \gamma_{01}, \tau_{00},\gamma_{10} ,\gamma_{11})$ através da distribuição a posteriori novamente e obter essa distribuição faz-se necessário calcular a função de verossimilhança, que pode ser obtida da seguinte maneira:
+
+% \begin{eqnarray}
+% p(\bs{y}| \beta_{0j}, \beta_{1j} , \tau) &=&\prod^m_{j=1}\prod^{n_j}_{i=1} p(y_{ij} | \beta_{0j}, \beta_{1j}, \tau ) p(\beta_{0j}|\gamma_{00},\gamma_{01},\tau_{00}) p(\beta_{1j}|\gamma_{10},\gamma_{11},\tau_{11})  \\
+% \nonumber
+%  &=& \prod^m_{j=1}\prod^{n_j}_{i=1}  \tau^{\frac{1}{2}} exp \Big\{ - \frac{\tau}{2} ( y_{ij} - \beta_{0j} - \beta_{1j} x_{ij} )^2 \Big\} \times \\ \nonumber
+% && \tau_{00}^{\frac{1}{2}} exp\Big\{-\frac{\tau_{00}}{2} ( \beta_{0j}-\gamma_{00}-\gamma_{01}x_j)^2 \Big\} \tau_{11}^{\frac{1}{2}} exp\Big\{-\frac{\tau_{11}}{2} ( \beta_{1j}-\gamma_{10}-\gamma_{11}x_j)^2 \Big\} , \\
+% \nonumber
+% \end{eqnarray}
+% onde $\bs{y} = (y_{1j}, \ldots, y_{n_j})$ é a amostra coletada.
+
+% Considere a priori onde os parâmetros são independentes e que:
+
+% \begin{eqnarray}
+% \beta_{0j} \sim N(m_{0j},\sigma_0^2) & \gamma_{00} \sim N(m_{00},\sigma^2_{00}) & \gamma_{10} \sim N(m_{10},\sigma^2_{10})  \nonumber \\
+% \beta_{1j} \sim N(m_{1j},\sigma_1^2) & \gamma_{01} \sim N(m_{01},\sigma^2_{01}) & \gamma_{11} \sim N(m_{11},\sigma^2_{11}) \nonumber \\
+% \tau \sim G(a,b) & \tau \sim G(a_{00},b_{00}) & \tau \sim G(a_{11},b_{11}) \nonumber \\
+% \end{eqnarray}
+
+% Sob este modelo $\tau_{00}$ e $\tau_{11}$ são agora componentes de variância condicional, pois neste ajuste a variável $x_j$ está sendo considerada, então:
+
+
+% \begin{itemize}
+
+% \item $\tau_{00}$: variância populacional dos interceptos corrigida por $x_j$
+% \item $\tau_{11}$: variância populacional dos inclinações corrigida por $x_j$
+% \item $\tau_{01}$: covariância entre $\beta_0$ e $\beta_1$ {\color{red} Estou considerando que são independentes..}
+% \end{itemize}
+
+
+
+% Da mesma forma que no exemplo do modelo de regressão linear simples, tem-se que a distribuição a priori conjunta será:
+% \begin{eqnarray}
+%  p(\beta_{0j}, \beta_{1j} , \tau, \gamma_{00}, \gamma_{01}, \tau_{00},\gamma_{10} ,\gamma_{11}) &\propto& exp\Big\{-\frac{1}{2\sigma_0^2}( \beta_{0j} - m_{0j})^2\Big\} exp\Big\{-\frac{1}{2\sigma_1^2}( \beta_{1j} - m_{1j})^2\Big\}
+% \nonumber \\
+%  &\times& exp\Big\{ - \frac{1}{2 \sigma_{00}^2}( \gamma_{00}-m_{00} )^2 \Big\} exp\Big\{ - \frac{1}{2 \sigma_{01}^2}( \gamma_{01}-m_{01} )^2 \Big\}
+% \nonumber \\
+%  &\times& exp\Big\{ - \frac{1}{2 \sigma_{10}^2}( \gamma_{10}-m_{10} )^2 \Big\} exp\Big\{ - \frac{1}{2 \sigma_{11}^2}( \gamma_{11}-m_{11} )^2 \Big\}
+% \nonumber \\
+%  &\times&  \tau^{a-1} exp\{-b \tau\} \tau^{a_{00}-1}exp \{-b_{00} \tau\} \tau^{a_{11}-1}exp \{-b_{11} \tau\} \nonumber
+% \end{eqnarray}
+
+% E novamente, A funçã0 de verossimilhança será combinada com a distribuição a priori de forma que obtem-se a a distribuição a posteriori é proporcional a:
+
+% \begin{eqnarray}
+% p(\bs{\theta}|\bs{y}) &\propto& \prod^m_{j=1}\prod^{n_j}_{i=1}  \tau^{\frac{1}{2}} exp \Big\{ - \frac{\tau}{2} ( y_{ij} - \beta_{0j} - \beta_{1j} x_{ij} )^2 \Big\} \tau_{00}^{\frac{1}{2}} exp\Big\{-\frac{\tau_{00}}{2} ( \beta_{0j}-\gamma_{00}-\gamma_{01}x_j)^2 \Big\} \tau_{11}^{\frac{1}{2}}  \nonumber \\
+% &\times&exp\Big\{-\frac{\tau_{11}}{2} ( \beta_{1j}-\gamma_{10}-\gamma_{11}x_j)^2 \Big\} exp\Big\{-\frac{1}{2\sigma_0^2}( \beta_{0j} - m_{0j})^2\Big\} exp\Big\{-\frac{1}{2\sigma_1^2}( \beta_{1j} - m_{1j})^2\Big\}
+% \nonumber \\
+%  &\times& exp\Big\{ - \frac{1}{2 \sigma_{00}^2}( \gamma_{00}-m_{00} )^2 \Big\} exp\Big\{ - \frac{1}{2 \sigma_{01}^2}( \gamma_{01}-m_{01} )^2 \Big\}
+% \nonumber \\
+%  &\times& exp\Big\{ - \frac{1}{2 \sigma_{10}^2}( \gamma_{10}-m_{10} )^2 \Big\} exp\Big\{ - \frac{1}{2 \sigma_{11}^2}( \gamma_{11}-m_{11} )^2 \Big\}
+% \nonumber \\
+%  &\times&  \tau^{a-1} exp\{-b \tau\} \tau^{a_{00}-1}exp \{-b_{00} \tau\} \tau^{a_{11}-1}exp \{-b_{11} \tau\} \label{dp_MLH}
+% \end{eqnarray}
+
+% Note que essa distribuição além de multivariada também é complexa e não possui forma analítica conhecida. Sendo assim, recorre-se novamente aos métodos de \ac{MCMC}, descritos na Subseção \ref{AG}, para se obter amostras dessa distribuição. E então faz-se necessário obter as \ac{DCCP} de $\beta_{0j}, \beta_{1j} , \tau, \gamma_{00}, \gamma_{01}, \tau_{00},\gamma_{10} ,\gamma_{11}$.
+
+% As primeiras \ac{DCCP}s definida aqui serão as de $\tau, \tau_{00} e \tau_{11}$. Essas distribuições são facilmente obtidas reescrevendo a distribuição a posteriori, dada na Equação (\ref{dp_MLH}), considerando apenas os parâmetros $\tau, \tau_{00} e \tau_{11}$ como parâmetros desconhecidos e todos os outros parâmetros como conhecidos, ou seja,
+
+% \begin{eqnarray}
+% p(\tau | y_1, \ldots, y_n, \bs{\theta}) \propto \tau^{\frac{n}{2}+a-1}exp\Big\{-\tau \Big( \frac{\sum^n_{i=1}(y_{ij}-\beta_{0j}-\beta_{1j} x_{ij})^2}{2} + b \Big) \Big\}
+% \end{eqnarray}
+
+% Logo, a \ac{DCCP} de $\tau$ é
+% \begin{eqnarray}
+% \tau|y_1, \ldots,y_n,\bs{\theta} \sim Gama \Big( \frac{n}{2}+a,b+\frac{1}{2} \sum^n_{i=1}(y_{ij}-\beta_{0j}-\beta_{1j} x_{ij})^2 \Big)
+% \end{eqnarray}
+
+% \begin{eqnarray}
+% p(\tau_{00} | y_1, \ldots, y_n, \bs{\theta}) \propto \tau_{00}^{\frac{n}{2}+a_{00}-1}exp\Big\{-\tau_{00} \Big( \frac{\sum^n_{i=1}(\beta_{0j}-\gamma_{00}-\gamma_{01} x_{j})^2}{2} + b_{00} \Big) \Big\}
+% \end{eqnarray}
+
+% Logo, a \ac{DCCP} de $\tau_{00}$ é
+% \begin{eqnarray}
+% \tau_{00}|y_1, \ldots,y_n,\bs{\theta} \sim Gama \Big( \frac{n}{2}+a_{00},b_{00}+\frac{1}{2} \sum^n_{i=1}(\beta_{0j}-\gamma_{00}-\gamma_{01} x_{j})^2 \Big)
+% \end{eqnarray}
+
+% \begin{eqnarray}
+% p(\tau_{11} | y_1, \ldots, y_n, \bs{\theta}) \propto \tau_{11}^{\frac{n}{2}+a_{11}-1}exp\Big\{-\tau_{11} \Big( \frac{\sum^n_{i=1}(\beta_{1j}-\gamma_{10}-\gamma_{11} x_{j})^2}{2} + b_{11} \Big) \Big\}
+% \end{eqnarray}
+
+% Logo, a \ac{DCCP} de $\tau_{11}$ é
+% \begin{eqnarray}
+% \tau_{11}|y_1, \ldots,y_n,\bs{\theta} \sim Gama \Big( \frac{n}{2}+a_{11},b_{11}+\frac{1}{2} \sum^n_{i=1}(\beta_{1j}-\gamma_{10}-\gamma_{11} x_{j})^2 \Big)
+% \end{eqnarray}
+
+% Já para o cálculo da \ac{DCCP} de $\beta_{0j}$ será considerado apenas $\beta_{0j}$ como parâmetro desconhecido e o restante como conhecido, obtendo assim:
+
+% {\color{red} Fellipe: Antes de continuar buscar saber se os calculos acima estao corretos}
+
+% }
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Rascunho do modelo do tcc
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Modelo antigo do projeto (bivariado)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Considere o vetor aleatório $\mathbf{Y}=(Y_1, Y_2)$ como variável resposta de um modelo hierárquico bayesiano definido da seguinte maneira:
+
+% \begin{eqnarray*}
+% \textbf{Y} =
+% \begin{pmatrix}
+% Y_{kij}
+% \end{pmatrix}
+%  =
+% \begin{pmatrix}
+% Y_{1ij} \\
+% Y_{2ij}
+% \end{pmatrix}
+% \sim
+% N\begin{pmatrix}
+% \begin{pmatrix}
+% \mu_{1i} \\
+% \mu_{2i}
+% \end{pmatrix}
+% ,
+% \sigma_{y_k}\begin{pmatrix}
+% 1 & 0 \\
+% 0 & 1
+% \end{pmatrix}
+% \end{pmatrix}
+% \end{eqnarray*}
+
+% onde:
+% \begin{itemize}
+% \item i=1,\ldots,n indivíduos e
+% \item j= 1,\ldots,m intervalos de tempo.
+% \end{itemize}
+
+% Observe que as variáveis respostas desse modelo estão sendo consideradas como independentes pois a matriz que multiplica $\sigma_{y_k}$ é a matriz identidade, que neste caso não considera a correlação entre as variáveis respostas.
+
+% Para estruturar de forma agrupada em diferentes níveis, \textbf{$\mu$} e \textbf{b} serão definidos da seguinte maneira:
+
+% \begin{eqnarray*}
+% \mathbf{\mu} =
+% \begin{pmatrix}
+% \mu_{ki}
+% \end{pmatrix}
+% =
+% \begin{pmatrix}
+% \mu_{1i} \\
+% \mu_{1i}
+% \end{pmatrix}
+% =
+% \begin{pmatrix}
+% \mu_{1} \\
+% \mu_{1}
+% \end{pmatrix}
+% +
+% \begin{pmatrix}
+% b_{1i} \\
+% b_{2i}
+% \end{pmatrix}
+%  \ \ e \ \
+% \begin{pmatrix}
+% b_{1i} \\
+% b_{2i}
+% \end{pmatrix}
+% \sim
+% N\begin{pmatrix}
+% \begin{pmatrix}
+% 0 \\
+% 0
+% \end{pmatrix}
+% ,
+% \begin{pmatrix}
+% \sigma_{b_1} & 0 \\
+% 0 & \sigma_{b_2}
+% \end{pmatrix}
+% \end{pmatrix}
+% \end{eqnarray*}
+
+
+% Sendo assim, os parâmetros desconhecidos deste modelo serão:
+
+% $$
+% \Psi = ( \mu_1, \mu_2, \tau_{y_1},\tau_{y_1},\tau_{b_1},\tau_{b_2},b_{1i},b_{2i} ).
+% $$
+
+
+% \subsubsection{Verossimilhança}
+
+% A função de verossimilhança deste modelo pode ser escrita da seguinte forma:
+
+% \begin{eqnarray*}
+% & &\prod^{n}_{i=1} \prod^{m}_{j=1} p( \mathbf{y_{ij}} | \mathbf{\mu} , \mathbf{\sigma_y^2} , \mathbf{b} ) p( \mathbf{b_i}|\mathbf{\sigma_b^2} )
+% \\
+% &\propto& \
+% \prod^{n}_{i=1} \prod^{m}_{j=1}
+% \bigg[ (\sigma_{y_1}^2 \sigma_{y_2}^2 )^{-1/2} exp\bigg\{ -\dfrac{1}{2} \bigg[ \bigg( \dfrac{y_{1ij}-(\mu_1 + b_{1i}) }{\sigma_{y_1}} \bigg)^2 + \bigg( \dfrac{y_{2ij}-(\mu_2 + b_{2i}) }{\sigma_{y_2}} \bigg)^2  \bigg] \bigg\} \times \\
+% && (\sigma_{b_1}^2 \sigma_{b_2}^2 )^{-1/2}
+% exp\bigg\{ -\dfrac{1}{2} \bigg[ \bigg( \dfrac{b_{1i}}{\sigma_{b_1}}\bigg)^2 +  \bigg( \dfrac{b_{2i}}{\sigma_{b_2}}\bigg)^2 \bigg] \bigg\} \bigg]
+% \end{eqnarray*}
+
+% \subsubsection{Distribuições priori}
+
+% Para utilizar a abordagem de estimação bayesiana, as seguintes distribuições priori serão definidas:
+
+% \begin{eqnarray*}
+% \mathbf{\mu}=
+% \begin{pmatrix}
+% \mu_{1} \\
+% \mu_{2}
+% \end{pmatrix}
+% \sim
+% N\begin{pmatrix}
+% \begin{pmatrix}
+% 0 \\
+% 0
+% \end{pmatrix}
+% ,V
+% \begin{pmatrix}
+% 1 & 0  \\
+% 0 & 1
+% \end{pmatrix}
+% \end{pmatrix}
+%  \ \ e \ \
+% \mathbf{\tau_k} \sim G(a_k, b_k) \ \textrm{, onde k = $y_1$, $y_2$, $b_1$, $b_2$}
+% \end{eqnarray*}
+
+% então, a distribuição priori conjunta para este modelo será:
+
+% \begin{eqnarray*}
+% p(\mathbf{\mu},\mathbf{\tau_k})=p(\mathbf{\mu})p(\mathbf{\tau_k}) \propto V^{1/2} exp\bigg\{- \dfrac{1}{2V}(\mu_1^2+\mu_2^2) \bigg\} (\tau_k)^{a_k -1} exp\big\{ -b_k \tau_k \big\}
+% \end{eqnarray*}
+
+% \subsubsection{Distribuição posteriori}
+
+% Assim, para a inferência sobre os parâmetros do modelo, será utilizada a distribuição a posteriori (DP), que é combinação da distribuição priori com a função de verossimilhança:
+
+% \begin{eqnarray*}
+% && \prod^{n}_{i=1} \prod^{m}_{j=1}
+% \bigg[ (\sigma_{y_1}^2 \sigma_{y_2}^2 \sigma_{b_1}^2 \sigma_{b_2}^2  )^{-1/2} \\
+% &&\times exp\bigg\{ -\dfrac{1}{2} \bigg[ \bigg( \dfrac{y_{1ij}-(\mu_1 + b_{1i}) }{\sigma_{y_1}} \bigg)^2 + \bigg( \dfrac{y_{2ij}-(\mu_1 + b_{2i}) }{\sigma_{y_2}} \bigg)^2 + \bigg( \dfrac{b_{1i}}{\sigma_{b_1}}\bigg)^2 +\bigg( \dfrac{b_{1i}}{\sigma_{b_2}}\bigg)^2         \bigg] \bigg\} \times \\
+% && \times V^{1/2} exp\bigg\{- \dfrac{1}{2V}(\mu_1^2+\mu_2^2) \bigg\} (\tau_k)^{a_k -1} exp\big\{ -b_k \tau_k \big\} \bigg]
+% \end{eqnarray*}
+
+% \subsubsection{Distribuições condicionais completas posteriori}
+
+% As distribuições a posteriori de $\mu_1, \mu_2, \tau_{y_1}, \tau_{y_1}, \tau_{b_1}, \tau_{b_2}, b_1, b_2$ podem ser separadamente apresentadas no formato de suas distribuições condicionais completa (DCCP):
+
+% \textbf{DCCPs para $\tau_y$}
+
+% para $\tau_{y_1}$:
+
+% \begin{eqnarray*}
+% p(\tau_y | \mathbf{y_1}, \Psi) \propto (\tau_{y_1})^{(nm)/2} (\tau_{y_1})^{a_{y_1}-1} exp\bigg\{ - \dfrac{1}{\tau_{y_1}} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{1ij}-(\mu_1 +b_{1i}))^2}{2} + b_{y_1}                 \bigg] \bigg\}
+% \end{eqnarray*}
+
+% então:
+% \begin{eqnarray*}
+% \tau_{y_1} | \mathbf{y}, \Psi \sim Gama\bigg( \dfrac{nm}{2}+a_{y_1}, b_{y_1} + \dfrac{1}{2} \sum^m_{j=1} \sum^n_{i=1} (y_{1ij}-(\mu_1 +b_{1i}))^2 \bigg)
+% \end{eqnarray*}
+
+% para $\tau_{y_2}$:
+
+% \begin{eqnarray*}
+% p(\tau_y | \mathbf{y_2}, \Psi) \propto (\tau_{y_2})^{(nm)/2} (\tau_{y_2})^{a_{y_2}-1} exp\bigg\{ - \dfrac{1}{\tau_{y_2}} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{2ij}-(\mu_2 +b_{2i}))^2}{2} + b_{y_2}                 \bigg] \bigg\}
+% \end{eqnarray*}
+
+% então:
+% \begin{eqnarray*}
+% \tau_{y_2} | \mathbf{y}, \Psi \sim Gama\bigg( \dfrac{nm}{2}+a_{y_2},\  b_{y_2} + \dfrac{1}{2} \sum^m_{j=1} \sum^n_{i=1} (y_{2ij}-(\mu_2 +b_{2i}))^2 \bigg)
+% \end{eqnarray*}
+
+% \newpage
+% \textbf{DCCPs para $\tau_b$}
+
+% para $\tau_{b_1}$:
+
+% \begin{eqnarray*}
+% p(\tau_b | \mathbf{y_1},\  \Psi) \propto (\tau_{b_1})^{n/2} (\tau_{b_1})^{a_{b_1}-1} exp\bigg\{ - \dfrac{1}{\tau_{b_1}} \bigg[ \dfrac{\sum^n_{i=1} b_{1i}^2 + b_{b_1}}{2}                 \bigg] \bigg\}
+% \end{eqnarray*}
+
+% então:
+% \begin{eqnarray*}
+% \tau_{b_1} | \mathbf{y}, \ \Psi \sim Gama\bigg( \dfrac{n}{2}+a_{b_1}, b_{b_1} + \dfrac{1}{2} \sum^n_{i=1} b_{1i}^2 \bigg)
+% \end{eqnarray*}
+
+% para $\tau_{b_2}$:
+
+% \begin{eqnarray*}
+% p(\tau_b | \mathbf{y_2},\  \Psi) \propto (\tau_{b_2})^{n/2} (\tau_{b_2})^{a_{b_2}-1} exp\bigg\{ - \dfrac{1}{\tau_{b_2}} \bigg[ \dfrac{\sum^n_{i=1} b_{2i}^2 + b_{b_2}}{2}                 \bigg] \bigg\}
+% \end{eqnarray*}
+
+% então:
+% \begin{eqnarray*}
+% \tau_{b_2} | \mathbf{y}, \ \Psi \sim Gama\bigg( \dfrac{n}{2}+a_{b_2}, b_{b_2} + \dfrac{1}{2} \sum^n_{i=1} b_{2i}^2 \bigg)
+% \end{eqnarray*}
+
+% \newpage
+% \textbf{DCCP para $\mu_1$ e $\mu_2$}
+
+% \begin{eqnarray*}
+% p(\mu | \mathbf{y}, \Psi) &\propto&
+% \\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{1ij}-(\mu_1 +b_{1i}))^2}{\sigma_{y_1}} \bigg]-\dfrac{1}{2V}\mu_1^2 \bigg\} \\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{1ij}^2 -2y_{1ij}(\mu_1 +b_{1i}) + (\mu_1 +b_{1i})^2)}{\sigma_{y_1}} \bigg]-\dfrac{\mu_1^2}{2V}\mu_1^2 \bigg\} \\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{1ij}^2 -2y_{1ij}\mu_1-2y_{1ij}b_{1i} + \mu_1^2 -\mu_1 b_{1i} +b_{1i}^2)}{\sigma_{y_1}} \bigg]-\dfrac{\mu_1^2}{2V}\mu_1^2 \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1} (y_{1ij}^2 -2y_{1ij}\mu_1-2y_{1ij}b_{1i} + \mu_1^2 -\mu_1 b_{1i} +b_{1i}^2)}{\sigma_{y_1}} \bigg]-\dfrac{\mu_1^2}{2V}\mu_1^2 \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[-\dfrac{2\mu_1\sum^m_{j=1}\sum^n_{i=1}y_{1ij}}{\sigma^2_{y_1}}+\dfrac{mn\mu_1^2}{\sigma^2_{y_1}} + \dfrac{2\mu_1\sum^m_{j=1}\sum^n_{i=1} b_{1i}}{\sigma^2_{y_1}}+\dfrac{\mu_1^2}{V} \bigg] \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \mu_1^2 \dfrac{mn}{\sigma^2_{y_1}} +\mu_1^2 V^{-1} - 2 \mu_1 \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1}y_{1ij}-b_{1i}}{\sigma_{y_1}} \bigg]  \bigg] \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \mu_1^2 \bigg[\dfrac{mn}{\sigma^2_{y_1}} +V^{-1}\bigg] - 2 \mu_1 \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1}y_{1ij}-b_{1i}}{\sigma_{y_1}} \bigg]  \bigg] \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2}\bigg[\dfrac{mn}{\sigma^2_{y_1}} +V^{-1}\bigg] \bigg[ \mu_1^2 - 2 \mu_1 \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1}y_{1ij}-b_{1i}}{\sigma_{y_1}} \bigg[\dfrac{mn}{\sigma^2_{y_1}} +V^{-1}\bigg]^{-1} \bigg]  \bigg] \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2 C_1} \bigg[ \mu_1^2 - 2 \mu_1 m_1   \bigg] \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2 C_1} \bigg( \mu_1 - m_1 \bigg)^2 \bigg\}
+% \end{eqnarray*}
+
+% onde:
+
+% \begin{eqnarray*}
+% && C_1 = \bigg[\dfrac{mn}{\sigma^2_{y_1}} +V^{-1}\bigg]\\
+% && m_1 = \bigg[ \dfrac{\sum^m_{j=1} \sum^n_{i=1}y_{1ij}-b_{1i}}{\sigma_{y_1}} \bigg[\dfrac{mn}{\sigma^2_{y_1}} +V^{-1}\bigg]^{-1} \bigg]
+% \end{eqnarray*}
+
+% Portanto:
+
+% \begin{eqnarray*}
+% \mu_1 | \mathbf{y_1}, \Psi \sim N(m_1, C_1)
+% \end{eqnarray*}
+
+% Como $\tau=\sigma^{-2}$, então $C_1^{-1}=mn\tau_{y_1}+V^{-1}$ e $m_1=\dfrac{\tau \sum^m_{j=1} \sum^n_{i=1}(y_{1ij}-b_{1i})}{mn\tau_{y_1}+V^{-1}}$
+
+% Note que o mesmo resultado vale para $\mu_2|\mathbf{y}, \Psi$.
+% \\
+
+% Com estes resultados em mãos já é possível implementar o algoritmo de Gibbs se os parâmetros $b_1$ e $b_2$ forem considerados como parâmetros conhecidos, portanto, duas abordagens serão adotadas no momento de implementar o algoritmo: considerando os parâmetros $b_1$ e $b_2$ conhecidos e desconhecidos.
+
+
+
+% Os resultados da abordagem onde os parâmetros $b_1$ e $b_2$ são conhecidos já está concluído, a próxima etapa é calcular as \textbf{DCCPs } de $b_1$ e $b_2$
+
+% \begin{eqnarray*}
+% p(b_{1i} | \mathbf{y}, \Psi) &\propto&
+% \\
+% &\propto& exp \bigg\{-\dfrac{1}{2}\sum^m_{j=1} \sum^n_{i=1} \bigg[ \dfrac{ (y_{1ij}-(\mu_1 +b_{1i}))^2}{\sigma_{y_1}}+\dfrac{b^2_{1i}}{\sigma^2_{b_1}} \bigg] \bigg\} \\
+% &\propto& exp \bigg\{-\dfrac{1}{2}\sum^m_{j=1} \sum^n_{i=1} \bigg[ \dfrac{   (y_{1ij}^2 -2y_{1ij}(\mu_1 +b_{1i}) + (\mu_1 +b_{1i})^2)}{\sigma_{y_1}}+\dfrac{b^2_{1i}}{\sigma^2_{b_1}}\bigg]  \bigg\} \\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \sum^m_{j=1} \sum^n_{i=1} \bigg[ \dfrac{  (y_{1ij}^2 -2y_{1ij}\mu_1-2y_{1ij}b_{1i} + \mu_1^2 -\mu_1 b_{1i} +b_{1i}^2)}{\sigma_{y_1}}+\dfrac{b^2_{1i}}{\sigma^2_{b_1}}\bigg]  \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2}\sum^m_{j=1} \sum^n_{i=1} \bigg[ \dfrac{ (-2y_{1ij}b_{1i} +2\mu_1b_{1i} +b_{1i}^2)}{\sigma_{y_1}}+\dfrac{b^2_{1i}}{\sigma^2_{b_1}}\bigg]  \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \sum^m_{j=1} \sum^n_{i=1} \bigg[ \dfrac{-2y_{1ij}b_{1i}}{\sigma_{y_1}} +\dfrac{2\mu_1b_{1i}}{\sigma_{y_1}} +\dfrac{b_{1i}^2}{\sigma_{y_1}}+\dfrac{b^2_{1i}}{\sigma^2_{b_1}}\bigg]  \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \sum^m_{j=1} \sum^n_{i=1} \bigg[ b^2_{1i} \bigg[ \dfrac{1}{\sigma^2_{y_1}} + \dfrac{1}{\sigma^2_{b_1}} \bigg] -2 b^2_{1i} \bigg[ \dfrac{y_{1ij} - \mu_1}{\sigma^2_{y_1}}  \bigg]   \bigg]  \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2}  \sum^n_{i=1} \bigg[ b^2_{1i} \bigg[ \dfrac{m}{\sigma^2_{y_1}} + \dfrac{m}{\sigma^2_{b_1}} \bigg] -2 b^2_{1i} \bigg[ \dfrac{\sum^m_{j=1} (y_{1ij} - \mu_1)}{\sigma^2_{y_1}}  \bigg]   \bigg]  \bigg\}\\
+% &\propto& exp \bigg\{-\dfrac{1}{2} \bigg[ \dfrac{m}{\sigma^2_{y_1}} + \dfrac{m}{\sigma^2_{b_1}} \bigg]  \sum^n_{i=1} \bigg[ b^2_{1i}  -2 b^2_{1i} \bigg[ \dfrac{\sum^m_{j=1} (y_{1ij} - \mu_1)}{\sigma^2_{y_1}} \bigg[ \dfrac{m}{\sigma^2_{y_1}} + \dfrac{m}{\sigma^2_{b_1}} \bigg]^{-1} \bigg]   \bigg]  \bigg\}\\
+% \end{eqnarray*}
+
+% onde:
+
+% \begin{eqnarray*}
+% && C_1 = \bigg[ \dfrac{m}{\sigma^2_{y_1}} + \dfrac{m}{\sigma^2_{b_1}} \bigg]\\
+% && m_1 = \dfrac{\sum^m_{j=1} (y_{1ij} - \mu_1)}{\sigma^2_{y_1}} \bigg[ \dfrac{m}{\sigma^2_{y_1}} + \dfrac{m}{\sigma^2_{b_1}} \bigg]^{-1}
+% \end{eqnarray*}
+
+% Portanto:
+
+% \begin{eqnarray*}
+% b_{1i} | \mathbf{y_1}, \Psi \sim N(m_1, C_1)
+% \end{eqnarray*}
+
+% Como $\tau=\sigma^{-2}$, então $C_1^{-1}=m (\tau_{y_1}+\tau{b_1})$ e $m_1=\dfrac{\tau_{y_1} \sum^m_{j=1}(y_{1ij}-m_1 }{m(\tau_{y_1}+\tau{b_1})}$
+
+% Note que o mesmo resultado vale para $b_{2i} |\mathbf{y}, \Psi$.
+% \\
+
+% Neste momento os cálculos para a implementação do algoritmo que possibilita estimar todos os parâmetros desconhecidos do modelo que foi definido esta concluído. Sua implementação foi realizada em duas etapas onde na primeira que pode ser conferida no apendice \ref{apendice:2} em \ref{apendice:2.algoritimo} no qual o parâmetro $\mathbf{b}$ foi considerado como conhecido e posteriormente o algoritmo foi implementado para o caso em que o parâmetro $\mathbf{b}$ foi considerado como desconhecido, a implementação desta segunda etapa pode ser conferida no apendice \ref{apendice:3} em \ref{apendice:3.algoritimo}.
+
+
+\chapter{Análise dos Resultados} \label{analise_dos_resultados}
+
+Neste capítulo, dados artificiais serão gerados e, em seguida, serão ajustados um modelo de regressão linear simples e um modelo linear hierárquico para avaliar o procedimento de inferência empregado. A seção \ref{resultados:MLS} contém os resultados para o modelo de regressão linear simples e a Seção \ref{resultados:MLH} contém os resultados para o modelo linear hierárquico.
+
+\section{Modelo de regressão linear simples}\label{resultados:MLS}
+
+A Seção \ref{resultados:MLSsim} conterá os resultados para os dados simulados e em seguida serão apresentados os dados reais seguindo o modelo de regressão linear simples conforme descrito na Seção \ref{cap:MRLS}.
+
+\subsection{Dados simulados}\label{resultados:MLSsim}
+
+Para o estudo do modelo de regressão linear primeiramente foi utilizado um conjunto de dados simulados conforme o modelo proposto em \ref{Met::modlinearposteriori}, utilizando $N=1000$, $\beta_0 = 1$, $\beta_1 = 0,5$, $\tau = 2$ e $X_i ~ N(0,1)$ e em seguida os parâmetros deste modelo, denotados por $\bs{\theta} = (\beta_0, \beta_1, \tau)$ foram estimados usando o paradigma Bayesiano.
+
+Para a estimação foram utilizados os seguintes hiperparâmetros : $m_0 = m_1 = 0$, $\sigma_0^2 = \sigma_1^2 = 100$, $a=0,1$ e $b=0,1$. O tamanho da cadeia foi de 30000 simulações e o ``burn-in" considerado após o ajuste foi de 15000. A figura \ref{fig:hist_den-simples-sim} apresenta os histogramas junto com as densidades de três cadeias obtidas ao se inicializar o amostrador em pontos diferentes de todos os parâmetros contidos em $\bs{\theta}$ e uma linha vermelha indicará o valor do real parâmetro utilizado para estimar a cadeia.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{hist_simples_sim.png}
+\caption{Histogramas e densidades das três últimas cadeias estimadas para modelo de regressão linear simples com dados simulados e destaque para o parâmetro populacional real}
+\label{fig:hist_den-simples-sim}
+\end{figure}
+
+A Figura \ref{fig:cadeia-simples-sim} apresenta os traços das cadeias dos parâmetros amostrados exibindo o intervalo de credibilidade com a linha pontilhada em azul e o valor verdadeiro do parâmetro em vermelho. Note que há indícios de convergência.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{cadeia_simples_sim.png}
+\caption{Cadeias estimadas para modelo de regressão linear simples com dados simulados com intervalos de credibilidade em azul e o parâmetro populacional real em vermelho}
+\label{fig:cadeia-simples-sim}
+\end{figure}
+
+Ao observar cada uma das figuras é possível notar que todos os intervalos de credibilidade contêm o parâmetro populacional real utilizado para gerar a amostra.
+
+A Figura \ref{fig:acf_den-simples-sim} apresenta os gráficos de autocorrelação, que indicam se houve a influência dos "valores vizinhos" dos parâmetros amostrados. Note que parece haver independência entre as interações.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{acf_simples_sim.png}
+\caption{Gráficos de autocorrelação das cadeias estimadas para modelo de regressão linear simples com dados simulados para os parâmetros $\beta_0$, $\beta_1$ e $\tau$}
+\label{fig:acf_den-simples-sim}
+\end{figure}
+
+Segundo a figura é possível notar que nenhuma das cadeias apresentaram estimativas autocorrelacionada, o que somado às análises feitas anteriormente, já permite o estudo sobre as estimativas dos parâmetros através do algoritmo. A Tabela \ref{tab:ajuste-simples-sim} apresenta os resumos a posteriori dos parâmetros amostrados.
+
+\begin{table}[H]
+\caption{Tabela de estatísticas descritivas dos parâmetros do modelo ajustado para os dados simulados}
+\vspace{0.1cm}
+\centering
+\begin{tabular}{crcrlc}
+  \hline
+Parâmetro & Média & Desv. Pad. & $2,5\%$ & $97,5\%$ & Parâmetro real \\
+  \hline
+$\beta_0$ & 1,02* & 0,02 & 0,98 & 1,07 & 1,00 \\
+$\beta_1$ & 0,49* & 0,02 & 0,45 & 0,54 & 0,50 \\
+$\tau$ & 1,90* & 0,08 & 1,74 & 2,07 & 2,00 \\
+   \hline
+\end{tabular}\\
+\label{tab:ajuste-simples-sim}
+*: Não contém o zero no intervalo de 95\% de credibilidade
+\end{table}
+
+Essa tabela mostra que nenhuma das estimativas contém o zero no intervalo de credibilidade e além disso como se trata de uma amostra simulada é possível comparar as estimativas com os valores reais que geraram a amostra e os valores estão  muito próximos da média (todos eles estão incluídos no intervalo de credibilidade).
+
+Agora que os resultados sob o paradigma bayesiano já foram conferidos  será ajustado um modelo de regressão linear simples pelo método dos mínimos quadrados através da função ``lm" (nativa do software \cite{R}) sob o paradigma clássico para comparar com os resultados de um modelo de regressão linear simples sob o paradigma bayesiano utilizando os resultados calculados na Seção \ref{cap:MRLS}.
+
+O modelo estimado para estes dados sob o paradigma da inferência clássica foi o seguinte: $\hat{y} = 1.0245 x + 0,4933$, o que mostra que as estimativas de $\beta_0$ e $\beta_1$ foram muito parecidas com as estimativas sob o paradigma da inferência bayesiana. A figura \ref{fig:ajuste-simples-sim} apresenta o gráfico de dispersão entre as variáveis da amostra simulada e as retas dos ajustes de ambos os modelos:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{ajuste_simples_sim.png}
+\caption{Relação entre a covariável e a variável resposta da cadeia simulada e reta do modelo linear clássico vs bayesiano com dados simulados}
+\label{fig:ajuste-simples-sim}
+\end{figure}
+
+\subsection{Dados reais}
+
+Agora que os resultados no algoritmo já foram conferidos e avaliados de maneira satisfatória utilizando os dados simulados, é a vez de fazer o ajuste para dados reais.
+
+O conjunto de dados que será utilizado como exemplo foi disponibilizado por Ezekiel (1930)\cite{Ezekiel.cars} e hoje faz parte do conjunto de banco de dados nativos do R (a base de dados pode ser obtida ao escrever ``cars" no console). Os dados informam a velocidade dos carros e as distâncias tomadas para parar, esses dados foram registrados na década de 1920 e são de grande utilidade didática até os dias de hoje.
+
+Considere que deseja-se modelar a velocidade dos carros de acordo com as distâncias tomadas para parar, portanto a variável resposta será a velocidade e a variável explicativa do modelo será a distância tomada para parar.
+
+A figura \ref{fig:hist_den-simples-cars} exibe os histogramas com as densidades de três cadeias obtidas ao se iniciar o amostrador em pontos diferentes de todos os parâmetros $\bs{\theta}$ mas dessa vez sem a linha vermelha que indicava o valor do parâmetro real pois agora ele é desconhecido.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{hist_simples_cars.png}
+\caption{Histogramas e densidades das três últimas cadeias estimadas para modelo de regressão linear simples com base de dados cars}
+\label{fig:hist_den-simples-cars}
+\end{figure}
+
+Nota-se que ambas as cadeias convergiram uma mesma distribuição e que as últimas três cadeias apresentaram valores próximos. A figura \ref{fig:cadeia-simples-cars} apresenta os traços das cadeias dos parâmetros amostrados. Note que há indícios de convergência.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{cadeia_simples_cars.png}
+\caption{Cadeias estimadas para modelo de regressão linear simples com base de dados cars}
+\label{fig:cadeia-simples-cars}
+\end{figure}
+
+A Figura \ref{fig:acf_den-simples-cars} apresenta os gráficos de autocorrelação dos parâmetros amostrados.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{acf_simples_cars.png}
+\caption{Gráficos de autocorrelação das cadeias estimadas para os respectivos parâmetros $\beta_0$, $\beta_1$ e $\tau$ do modelo de regressão linear simples com base de dados cars}
+\label{fig:acf_den-simples-cars}
+\end{figure}
+
+É possível notar que apenas nas primeiras defasagens das cadeias das estimativas para os parâmetros $\beta_0$ e $\beta_1$ se apresentaram de forma autocorrelacionada e que a partir dessa defasagem o gráfico de autocorrelação se apresentou de forma desejável.
+
+Como todas as características da cadeia gerada foram avaliadas de maneira satisfatória agora será possível conferir o ajuste dos parâmetros de maneira mais segura pois já foi constatada a convergência da cadeia, A Tabela \ref{tab:ajuste-simples-cars} apresenta o resumo a posteriori dos parâmetros estimados da cadeia e note que esta tabela não conta com a coluna dos valores reais como no exemplo anterior.
+
+\begin{table}[H]
+\caption{Resumo a posteriori dos parâmetros amostrados do modelo ajustado para os dados reais}
+\vspace{0.1cm}
+\centering
+\begin{tabular}{crcrl}
+  \hline
+Parâmetro & Média & Desv. Pad. & $2,5\%$ & $97,5\%$  \\
+  \hline
+$\beta_0$ & 8,24* & 0,84 & 6,57 & 9,92 \\
+$\beta_1$ & 0,17* & 0,02 & 0,13 & 0,20 \\
+$\tau$ & 0,11* & 0,02 & 0,07 & 0,15 \\
+   \hline
+\end{tabular}\\
+\label{tab:ajuste-simples-cars}
+*: Não contém o zero no intervalo de 95\% de credibilidade
+\end{table}
+
+Agora que os resultados sob o paradigma bayesiano já foram conferidos novamente será ajustado um modelo de regressão linear simples pelo método dos mínimos quadrados sob o paradigma clássico para comparar com os resultados do um modelo de regressão linear simples sob o paradigma bayesiano utilizando os resultados calculados na seção \ref{cap:MRLS}.
+
+O modelo estimado sob este paradigma pode ser escrito da seguinte maneira: $\hat{y} = 8,2839 x + 0,1656$, ou seja, os valores de $\beta_0$ e de $\beta_1$ novamente foram muito próximos dos parâmetros obtidos ao estimar sob o paradigma clássico.
+
+A Figura \ref{fig:ajuste-simples-cars} ilustra o gráfico de dispersão dos dados citados acima, com a intenção de exibir quanto uma variável é afetada por outra, onde no eixo vertical representa a velocidade do carro e no eixo horizontal a distância tomada para parar.
+
+Além do comportamento das variáveis, neste gráfico é exibido também os resultados obtidos do ajuste ao se utilizar o método de mínimos quadrados (representada pela linha em vermelho) para estimar os parâmetros e o ajuste do modelo \ref{Met::modlinearposteriori} ao se utilizar o método apresentado acima em \ref{cap:MRLS} (representada pela linha azul).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{ajuste_simples_cars.png}
+\caption{``Relação entre a covariável e a variável resposta da cadeia simulada com reta do modelo linear clássico vs bayesiano com base de dados cars}
+\label{fig:ajuste-simples-cars}
+\end{figure}
+
+É possível notar que os coeficientes calculados foram muito parecidos, mesmo apresentando pequenas diferenças decimais no valor dos coeficientes ainda é possível notar que as retas estão basicamente soprepostas, ou seja, os valores estimados em ambas as abordagens foram praticamente os mesmos.
+
+Apesar dos valores dos ajustes terem apresentado basicamente os mesmo resultados, a maneira de se conferir a qualidade do ajuste é diferente em ambas as abordagens. Enquanto sob o paradigma clássico o ajuste do modelo pode ser checado ao avaliar os pre-supostos quanto à distribuição dos resíduos, como recomenda Cordeiro e Demétrio (2008)\cite{GaussClarice}, ao utilizar um método de \ac{MCMC} faz-se necessário conferir também outros aspectos como por exemplo se houve convergência da cadeias além do comportamento das autocorrelações, vide Migon (2014)\cite{migon}.
+
+\subsection{Modelo de regressão linear hierárquico bayesiano}\label{resultados:MLH}
+
+Esta Seção conterá os resultados para os dados simulados seguindo o modelo de regressão linear hierárquico conforme descrito na Seção \ref{Met::modlinearhier}.
+
+Todas as contas referentes ao ajuste deste modelo já foram apresentadas na Seção \ref{Met::modlinearhier} na equação \ref{Met::modhierarquico} e agora que todos esses resultados já estão prontos, é possível a implementação do algoritmo computacional. Os dados serão simulados conforme o comportamento dos dados e a estimação dos parâmetros do modelo hierárquico bayesiano e o comportamento da cadeia serão avaliados nessa seção.
+
+Para essa abordagem, os parâmetros desconhecidos deste modelo serão:
+
+$$
+\bs{\theta}=({\bs{\alpha},\bs{\beta}, \alpha_c, \beta_c, \tau_c, \tau_\alpha, \tau_\beta})
+$$
+
+E como foi visto, a distribuição da variável $Y_{i,j}$ que corresponde a variável resposta da i-ésima observação no j-ésimo intervalo de tempo, do qual deseja-se estudar é:
+
+\begin{eqnarray}
+Y_{i,j} & \sim & N( \alpha_i +\beta_i x_j , \tau_c^{-1})
+\end{eqnarray}
+
+Onde $i=1,...,30$ observações e $j=1,...,5$ intervalos de tempo do acompanhamento do estudo.
+
+
+O conceito de priori hierárquica será utilizado aqui para realizar a simulação dos dados, pois esses dados serão gerados conforme os parâmetros da declaração do modelo linear hierárquico de forma que seja possível recuperar esses parâmetros conhecidos.
+
+Portanto, a seguir veja quais os parâmetros utilizados para gerar os dados e que serão recuperados após avaliar o ajuste do modelo conforme a metodologia proposta:
+
+\begin{eqnarray}
+\alpha_{i}  \sim  N( \alpha_c , \tau_\alpha^{-1}) &  \tau_\alpha  = \frac{1}{0,2}  & \alpha_{c}  = 20   \nonumber \\
+\beta_{i}  \sim  N( \beta_c , \tau_\beta^{-1})    &\tau_\beta  = \frac{1}{0,2} & \beta_{c}  = 2    \label{priorisMLH} \\
+  &  & \tau_c  = 1 \nonumber \\
+\end{eqnarray}
+onde $m_\alpha, V_\alpha, m_\beta, V_\beta, a_\tau, b_\tau, a_\alpha, b_\alpha, a_\beta, b_\beta$ são os parâmetros a priori conhecidos.
+
+
+Uma amostra de tamanho 30 foi simulada a partir dessas informações. Para inferir sobre os parâmetros desconhecidos, $\bs{\theta} = (\alpha_i, \beta_i, \tau_c, \alpha_c, \beta_c, \tau_\alpha, \tau_\beta)$ através das distribuições condicionais completas a posteriori e avaliar o comportamento da cadeia
+
+Neste exemplo, serão adotados os seguintes parâmetros a prioris conhecidos:
+
+\begin{eqnarray*}
+m_\alpha=0  & m_\beta=0\\
+V_\alpha = \frac{1}{0,0001} & a_\tau=0,001  \\
+V_\beta = \frac{1}{0,0001} & b_\tau=0,001 \\
+a_\alpha=0,001 & a_\beta=0,001 \\
+b_\alpha=0,001 & b_\beta=0,001
+\end{eqnarray*}
+
+E além disso o tamanho da cadeia foi de 150000 simulações e após o ajuste 75000 observações descartadas com a finalidade de avaliar o comportamento dos parâmetros após a convergência quando não estiverem mais correlacionados, essa técnica é chamada de ``burnin'' \cite{MigonMH}. A seguir serão apresentados os resultados obtidos após o ajuste da cadeia mas antes de conferir se os parâmetros populacionais conhecidos que geraram a amostra foram recuperados com o ajuste e a implementação do algoritmo será necessário avaliar como foi o comportamento da cadeia novamente através de seus gráficos de densidade, seu gráfico de autocorrelação e se houve convergência na distribuição dos parâmetros amostrados pelo método \ac{MCMC}.
+
+Seguindo a mesma lógica do método de avaliação da cadeia utilizado na Seção \ref{Met::modlinear}, inicialmente será conferido o comportamento das cadeias  com os histogramas junto com as densidades de três cadeias obtidas ao se inicializar o amostrador em pontos diferentes de todos os parâmetros do primeiro nível ($\tau_\alpha, \tau_\beta, \beta_c$ e $ \alpha_c$) pois elas irão determinar o quanto e em torno de qual valor as estimativas dos parâmetros $\alpha_i$ e $\beta_i$ do segundo nível (que será avaliado em seguida) estão concentradas.
+
+A figura \ref{fig:hist_den-hierarquico-sim} mostra o histograma junto com as densidades das três últimas cadeias dos parâmetros $ \alpha_c$, $\beta_c$, ,$\tau_\alpha$,$\tau_c$ e $\tau_\beta$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{hist_hierarquica_sim.png}
+\caption{Histogramas e densidades das três últimas cadeias estimadas para o modelo de regressão hierárquico bayesiano com base de dados simulada}
+\label{fig:hist_den-hierarquico-sim}
+\end{figure}
+
+A Figura \ref{fig:cadeia_den-hierarquico-sim} apresenta os traços das cadeias dos parâmetros amostrados. Note que parece ter havido convergência.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{cadeia_hierarquica_sim.png}
+\caption{Cadeias estimadas para o modelo de regressão hierárquico bayesiano com base de dados simulada}
+\label{fig:cadeia_den-hierarquico-sim}
+\end{figure}
+
+Novamente a cadeia para o parâmetro $\tau_\alpha$ se apresentou um pouco menos estável que as demais porém seus resultados serão melhor avaliados adiante.
+
+A Figura \ref{fig:acf_den-hierarquico-sim} apresenta o gráfico de autocorrelação dos parâmetros do primeiro nível $ \alpha_c$, $\beta_c$, ,$\tau_\alpha$,$\tau_c$ e $\tau_\beta$:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{acf_hierarquica_sim.png}
+\caption{Gráficos de autocorrelação das cadeias estimadas para o os respectivos parâmetros $ \alpha_c$, $\beta_c$, ,$\tau_\alpha$,$\tau_c$ e $\tau_\beta$ do modelo de regressão hierárquico bayesiano com base de dados simulada}
+\label{fig:acf_den-hierarquico-sim}
+\end{figure}
+
+Por fim ao avaliar o gráfico de autocorrelação é possível notar que apenas as estimativas iniciais se apresentaram de forma autocorrelacionada.
+
+Como os resultados gerais da convergência da cadeia já foram avaliados, nessa etapa também serão avaliadas as estimativas de cada um dos i-ésimos $\alpha_i$ e $\beta_i$ correspondente ao segundo nível do modelo hierárquico.
+
+As Figuras \ref{fig:cred_alpha} e \ref{fig:cred_beta} apresentam as médias a posteriori e o resultado das médias e limites inferiores e superiores dos intervalos de credibilidade de 95\%  para as cadeias de $\alpha_i$ e para $\beta_i$ estimadas incluindo o real valor estimado em azul e uma linha tracejada para os reais valores de $\alpha_c$ e $\beta_c$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{caterplot_a_hierarquica_sim.png}
+\caption{Médias e intervalos de credibilidade para a cadeia de $\alpha_i$ estimada incluindo o real valor estimado em azul e uma linha tracejada para o real valor de $\alpha_c$}
+\label{fig:cred_alpha}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{caterplot_b_hierarquica_sim.png}
+\caption{Médias e intervalos de credibilidade para a cadeia de $\beta_i$ estimada incluindo o real valor estimado em azul e uma linha tracejada para o real valor de $\beta_c$}
+\label{fig:cred_beta}
+\end{figure}
+
+Todos os intervalos de credibilidade contêm o real valor populacional de interesse, o que sugere que as estimativas com a implementação deste algoritmo foram satisfatórias
+
+Assim como nas cadeias anteriores, o comportamento das estimativas para o parâmetro incluído neste exemplo também se apresentou de forma satisfatória, e como todos os parâmetros foram estimados de forma razoavelmente boa a próxima etapa será conferir a Tabela \ref{tab:ajuste-hierarquico-sim} que apresenta os resumos a posteriori dos parâmetros amostrados
+
+\begin{table}[H]
+\caption{Resumo a posteriori dos parâmetros do modelo ajustado para os dados reais}
+\vspace{0.1cm}
+\centering
+\begin{tabular}{crcrlc}
+  \hline
+Parâmetro & Média & Desv. Pad. & $2,5\%$ & $97,5\%$ & Parâmetro real  \\
+  \hline
+$\alpha_c$ & 19,65* & 0,12 & 19,89 & 20,12& 20  \\
+$\beta_c$ & 1,89* & 0,07  & 2,04 & 2,19 & 2 \\
+$\tau_c$ & 0,76* & 0,17 & 1,06 & 1,41 & 1 \\
+$\tau_\alpha$ & 1,90* & 79,30 & 16,79 & 86,14 & 5 \\
+$\tau_\beta$ & 3,62* & 1,71 & 6,58 & 10,42 & 5 \\
+\hline
+\end{tabular}\\
+\label{tab:ajuste-hierarquico-sim}
+*: Não contém o zero no intervalo de 95\% de credibilidade
+\end{table}
+
+Mesmo com o alto desvio padrão registrado para a estimativa de $\tau_\alpha$ nota-se que este valor não interferiu em todas as outras estimativas, que apresentaram bons resultados pois todas elas incluem o real valor populacional que gerou a amostra em seus intervalos de credibilidade.
+
+
+\chapter{Conclusão}
+
+O uso do algoritmo para simular os dados da implementação do modelo hierárquico bayesiano envolveu diversas etapas. Inicialmente foi necessária a revisão da literatura para a compreensão dos métodos que seriam utilizados na implementação do algoritmo bem como seu desenvolvimento. Essa pesquisa funcionou de maneira muito didática de forma que a cada semana a abordagem pudesse envolver maior grau de complexidade.
+
+Os cálculos realizados para descobrir as distribuições posterioris dos parâmetros foram feitos em diversas passos até que todas as distribuições condicionais completas estivessem calculadas e bem definidas para a implementação do algoritmo.
+
+Durante o estudo diversos valores os parâmetros a priori foram selecionados para que fosse possível avaliar a sensibilidade da qualidade da escolha da distribuição priori. Observou-se que valores elevados para variância a priori (também consideradas como "não informativas", fazendo uma analogia à modelos clássicos) obtiveram melhores ajustes atribuindo maior importância à informação provinda da amostra.
+
+O estudo com dados simulados facilitou o entendimento do algoritmo pois foi possível notar com facilidade a inadequabilidade das escolhas das prioris, que resultavam em estimativas muito distante do parâmetro populacional que gerou a amostra.
+
+
+%Referencias
+
+\bibliographystyle{abnt-num} %abnt-num ou abnt-alf
+\bibliography{ref}
+
+
+
+%Os anexos devem ser intorduzidos ao final do trabalho, depois das referências
+
+% \newpage
+% \appendix
+
+%\chapter{Apêndice}
+
+% \chapter{Códigos na seção do ajuste do modelo de regressão linear simples e hierárquico com os dados simulados e os dados cars}\label{apendice:1}
+
+% \begin{lstlisting}
+
+% \end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \chapter{Códigos para simular amostra da abordagem do amostrador de Gibbs para modelo linear bayesiano}\label{apendice:2}
+
+
+% \section{Amostra utilizada na abordagem do amostrador de Gibbs para o modelo linear bayesiano}\label{apendice:2.amostra}
+
+% \begin{lstlisting}
+
+
+% \end{lstlisting}
+
+
+% \section{Algoritmo para abordagem do amostrador de Gibbs para modelo linear hierárquico bayesiano}\label{apendice:2.algoritimo}
+
+% \begin{lstlisting}
+
+
+% \end{lstlisting}
+
+
+\end{document}
