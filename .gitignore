@@ -1,0 +1,37 @@
+# Local project artifacts
+VOICE.md
+BRAND.md
+2018-07-28-modelo-bayesiano-do-zero.html
+
+# Local agent / assistant state
+.claude/
+
+# R / RStudio
+# .Rprofile fica FORA dessa lista de proposito: e o que ativa o renv (renv/activate.R)
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Rproj.user
+.Renviron
+.Renviron.local
+.Rproj
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Editor temporary files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# Logs / caches
+*.log
+*.cache/
+*.out
