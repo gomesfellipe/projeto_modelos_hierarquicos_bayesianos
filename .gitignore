@@ -35,3 +35,8 @@ Icon?
 *.log
 *.cache/
 *.out
+
+# Quarto build artifacts
+*.rmarkdown
+/.quarto/
+_freeze/
