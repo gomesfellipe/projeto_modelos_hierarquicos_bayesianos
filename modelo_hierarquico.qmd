@@ -1,0 +1,353 @@
+---
+title: "Regressão linear hierárquica bayesiana com amostrador de Gibbs"
+subtitle: "Modelo de 2 níveis — dado simulado e dado real (`rats.txt`)"
+lang: pt
+format:
+  html:
+    toc: true
+    code-fold: show
+    embed-resources: true
+execute:
+  freeze: auto
+---
+
+Companion literate do [`modelo_hierarquico.R`](modelo_hierarquico.R). Mesmo
+algoritmo (mesma `gibbs_hierarquico()`, mesmo loop) — aqui só junta a
+matemática com o código e o gráfico. Derivação algébrica completa está em
+[`artigo.pdf`](artigo.pdf), Seção 3.2; aqui vai o resultado final de cada
+full conditional.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+source("gibbs_helpers.R", encoding = "UTF-8")
+```
+
+## Modelo
+
+2 níveis: $i=1,\ldots,n$ indivíduos, cada um observado em $j=1,\ldots,T$
+instantes de tempo $x_j$.
+
+$$
+Y_{i,j} \sim N(\alpha_i + \beta_i x_j, \ \tau_c^{-1})
+$$
+
+Priori hierárquica — $\alpha_i,\beta_i$ (nível do indivíduo) vêm de uma
+distribuição populacional $\alpha_c,\beta_c$ (nível 2):
+
+$$
+\begin{aligned}
+\alpha_i &\sim N(\alpha_c, \tau_\alpha^{-1}) & \tau_c &\sim \text{Gama}(a_\tau, b_\tau) \\
+\beta_i &\sim N(\beta_c, \tau_\beta^{-1}) & \tau_\alpha &\sim \text{Gama}(a_\alpha, b_\alpha) \\
+\alpha_c &\sim N(m_\alpha, V_\alpha) & \tau_\beta &\sim \text{Gama}(a_\beta, b_\beta) \\
+\beta_c &\sim N(m_\beta, V_\beta)
+\end{aligned}
+$$
+
+7 parâmetros desconhecidos, 7 full conditionals. Todas fecham por conjugação
+(Normal-Normal pros níveis de média, Normal-Gama pras precisões):
+
+$$
+\tau_c \mid \cdot \ \sim\ \text{Gama}\left(\frac{nT}{2}+a_\tau,\ \ b_\tau+\frac{1}{2}\sum_{i,j}(y_{i,j}-\alpha_i-\beta_i x_j)^2\right)
+$$
+
+$$
+\alpha_i \mid \cdot \ \sim\ N\Big((\tau_c T+\tau_\alpha)^{-1}\big(\tau_c\textstyle\sum_j (y_{i,j}-\beta_i x_j)+\tau_\alpha\alpha_c\big),\ (\tau_c T+\tau_\alpha)^{-1}\Big)
+$$
+
+$$
+\beta_i \mid \cdot \ \sim\ N\Big((\tau_c\textstyle\sum_j x_j^2+\tau_\beta)^{-1}\big(\tau_c\textstyle\sum_j (y_{i,j}-\alpha_i) x_j+\tau_\beta\beta_c\big),\ (\tau_c\textstyle\sum_j x_j^2+\tau_\beta)^{-1}\Big)
+$$
+
+$$
+\tau_\alpha \mid \cdot \ \sim\ \text{Gama}\left(\frac{n}{2}+a_\alpha,\ \ b_\alpha+\frac{1}{2}\sum_i(\alpha_i-\alpha_c)^2\right), \qquad
+\tau_\beta \mid \cdot \ \sim\ \text{Gama}\left(\frac{n}{2}+a_\beta,\ \ b_\beta+\frac{1}{2}\sum_i(\beta_i-\beta_c)^2\right)
+$$
+
+$$
+\alpha_c \mid \cdot \ \sim\ N\Big((\tau_\alpha n+\tfrac{1}{V_\alpha})^{-1}\big(\tau_\alpha\textstyle\sum_i\alpha_i+\tfrac{m_\alpha}{V_\alpha}\big),\ (\tau_\alpha n+\tfrac{1}{V_\alpha})^{-1}\Big), \qquad
+\beta_c \mid \cdot \ \sim\ N\Big((\tau_\beta n+\tfrac{1}{V_\beta})^{-1}\big(\tau_\beta\textstyle\sum_i\beta_i+\tfrac{m_\beta}{V_\beta}\big),\ (\tau_\beta n+\tfrac{1}{V_\beta})^{-1}\Big)
+$$
+
+`gibbs_hierarquico()` amostra essas 7 nessa ordem a cada iteração — $\alpha_i,
+\beta_i$ primeiro (dentro de um loop nos $n$ indivíduos), depois $\tau_c,
+\tau_\alpha, \tau_\beta, \alpha_c, \beta_c$. Uma função, usada abaixo pro dado
+simulado e pro `rats.txt`, sem duplicar o loop.
+
+## Dado simulado
+
+30 indivíduos, 5 instantes de tempo, parâmetros populacionais conhecidos
+($\alpha_c=20$, $\beta_c=2$) — serve pra checar se o Gibbs recupera os
+parâmetros usados na simulação.
+
+```{r}
+#| label: dados-sim
+set.seed(22 - 03 - 2018)
+```
+
+::: {.callout-note}
+`22 - 03 - 2018` não é a data 22/03/2018 — R avalia como subtração e vira
+`set.seed(-1999)`. Bug do autor original tentando usar a data como seed.
+Mantido de propósito: é o que gera os mesmos dados simulados que já estão no
+artigo e nas imagens publicadas; corrigir mudaria os números.
+:::
+
+```{r}
+#| label: gera-dados-sim
+x        <- c(8, 15, 22, 29, 36)
+xbarra   <- mean(x)
+x        <- x - xbarra
+n        <- 30
+t        <- 5
+alpha_c  <- 20
+beta_c   <- 2
+alpha    <- beta <- NULL
+taualpha <- 1 / 0.2
+taubeta  <- 1 / 0.2
+y        <- matrix(NA, n, t)
+tau      <- 1
+e        <- matrix(rnorm(n * t, 0, sqrt(1 / tau)), n, t)
+for (i in 1:n) {
+  alpha[i] <- rnorm(1, alpha_c, sqrt(1 / taualpha))
+  beta[i]  <- rnorm(1, beta_c, sqrt(1 / taubeta))
+  for (j in 1:t) {
+    y[i, j] <- alpha[i] + beta[i] * x[j] + e[i, j]
+  }
+}
+```
+
+Priori pouco informativa pros 4 hiperparâmetros de precisão/média
+populacional ($V_\alpha=V_\beta=10^4$, $a=b=0{,}001$ pras Gamas):
+
+```{r}
+#| label: priori-sim
+m.alpha <- 0; V.alpha <- 1 / 0.0001
+m.beta  <- 0; V.beta  <- 1 / 0.0001
+a.tau   <- 0.001; b.tau   <- 0.001
+a.alpha <- 0.001; b.alpha <- 0.001
+a.beta  <- 0.001; b.beta  <- 0.001
+nsim    <- 150000
+burnin  <- nsim / 2
+```
+
+```{r}
+#| label: gibbs-sim
+#| results: hide
+set.seed(1)
+cadeias_sim <- gibbs_hierarquico(
+  y, x, n, t, nsim,
+  m.alpha, V.alpha, m.beta, V.beta,
+  a.tau, b.tau, a.alpha, b.alpha, a.beta, b.beta
+)
+
+inds_sim <- seq(burnin, nsim, 50)
+results_sim <- cbind(
+  cadeias_sim$alpha.c, cadeias_sim$beta.c, cadeias_sim$tau.c,
+  cadeias_sim$tau.alpha, cadeias_sim$tau.beta
+) %>% as.data.frame() %>% .[inds_sim, ]
+
+real <- c(alpha_c, beta_c, tau, taualpha, taubeta)
+name <- c(expression(alpha[c]), expression(beta[c]), expression(tau[c]), expression(tau[alpha]), expression(tau[beta]))
+```
+
+Cadeias dos parâmetros populacionais ($\alpha_c, \beta_c, \tau_c, \tau_\alpha,
+\tau_\beta$ — não dos 30 $\alpha_i,\beta_i$ individuais, isso vai no
+caterpillar plot mais abaixo):
+
+```{r}
+#| label: fig-cadeia-sim
+#| fig-cap: "Cadeias dos parâmetros populacionais — dado simulado"
+cadeia(results_sim, name, real)
+```
+
+```{r}
+#| label: fig-hist-sim
+#| fig-cap: "Histograma e densidade — dado simulado"
+g1 <- hist_den(results_sim[, 1], name = name[1], p = real[1])
+g2 <- hist_den(results_sim[, 2], name = name[2], p = real[2])
+g3 <- hist_den(results_sim[, 3], name = name[3], p = real[3])
+g4 <- hist_den(results_sim[, 4], name = name[4], p = real[4])
+g5 <- hist_den(results_sim[, 5], name = name[5], p = real[5])
+grid.arrange(g1, g2, g3, g4, g5, ncol = 1)
+```
+
+```{r}
+#| label: fig-acf-sim
+#| fig-cap: "FAC das cadeias — dado simulado"
+FAC(results_sim)
+```
+
+Sumário completo — os 30 $\alpha_i$, os 30 $\beta_i$ e os 5 parâmetros
+populacionais, contra o valor real usado na simulação:
+
+```{r}
+#| label: tbl-coef-sim
+resultado_sim <- coeficientes_hierarquico(
+  cadeias_sim$alpha.i[inds_sim, ], alpha,
+  cadeias_sim$beta.i[inds_sim, ], beta,
+  cadeias_sim$alpha.c, alpha_c,
+  cadeias_sim$beta.c, beta_c,
+  cadeias_sim$tau.c, tau,
+  cadeias_sim$tau.alpha, taualpha,
+  cadeias_sim$tau.beta, taubeta,
+  ncol(results_sim) + 60
+)
+tab_sim <- resultado_sim[[2]]
+knitr::kable(tab_sim)
+```
+
+Caterpillar plot: intervalo de credibilidade de cada $\alpha_i$ (ponto branco
+= média posteriori, ponto azul = $\alpha_i$ real usado na simulação, linha
+tracejada = $\alpha_c$ populacional):
+
+```{r}
+#| label: fig-caterpillar-alpha-sim
+#| fig-cap: "Intervalo de credibilidade de cada alpha_i — dado simulado"
+cbind(alpha = 1:30, tab_sim[1:30, ]) %>%
+  as.data.frame() %>%
+  ggplot(aes(x = alpha, y = Média)) +
+  geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`), colour = "black", width = .1) +
+  geom_point(aes(y = `Param. Pop.`), size = 2, shape = 21, fill = "blue") +
+  geom_point(size = 3, shape = 21, fill = "white") +
+  xlab("Indivíduo") + ylab(expression(alpha[i])) +
+  expand_limits(y = 0) +
+  theme_bw() +
+  geom_hline(yintercept = alpha_c, linetype = "dashed", color = "red", linewidth = 1.1)
+```
+
+Mesma leitura pro $\beta_i$:
+
+```{r}
+#| label: fig-caterpillar-beta-sim
+#| fig-cap: "Intervalo de credibilidade de cada beta_i — dado simulado"
+cbind(beta = 1:30, tab_sim[31:60, ]) %>%
+  as.data.frame() %>%
+  ggplot(aes(x = beta, y = Média)) +
+  geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`), colour = "black", width = .1) +
+  geom_point(aes(y = `Param. Pop.`), size = 2, shape = 21, fill = "blue") +
+  geom_point(size = 3, shape = 21, fill = "white") +
+  xlab("Indivíduo") + ylab(expression(beta[i])) +
+  expand_limits(y = 0) +
+  theme_bw() +
+  geom_hline(yintercept = beta_c, linetype = "dashed", color = "red", linewidth = 1.1)
+```
+
+## Dado real (`rats.txt`)
+
+Mesma função `gibbs_hierarquico()`, dado real: 30 ratos, peso medido em 5
+dias diferentes. Sem parâmetro real pra comparar — aqui o interesse é só o
+ajuste.
+
+```{r}
+#| label: dados-rats
+rats <- read.table("rats.txt", header = TRUE)
+
+y      <- rats
+x      <- c(8, 15, 22, 29, 36)
+xbarra <- mean(x)
+x      <- x - xbarra
+n      <- nrow(y)
+t      <- ncol(y)
+```
+
+Mesma priori pouco informativa de antes:
+
+```{r}
+#| label: priori-rats
+m.alpha <- 0; V.alpha <- 1 / 0.0001
+m.beta  <- 0; V.beta  <- 1 / 0.0001
+a.tau   <- 0.001; b.tau   <- 0.001
+a.alpha <- 0.001; b.alpha <- 0.001
+a.beta  <- 0.001; b.beta  <- 0.001
+nsim    <- 50000
+burnin  <- nsim / 3
+```
+
+```{r}
+#| label: gibbs-rats
+#| results: hide
+set.seed(1)
+cadeias_rats <- gibbs_hierarquico(
+  y, x, n, t, nsim,
+  m.alpha, V.alpha, m.beta, V.beta,
+  a.tau, b.tau, a.alpha, b.alpha, a.beta, b.beta
+)
+
+inds_rats <- seq(burnin, nsim, 50)
+results_rats <- cbind(
+  cadeias_rats$alpha.c, cadeias_rats$beta.c, cadeias_rats$tau.c,
+  cadeias_rats$tau.alpha, cadeias_rats$tau.beta
+) %>% as.data.frame() %>% .[inds_rats, ]
+
+name <- c(expression(alpha[c]), expression(beta[c]), expression(tau[c]), expression(tau[alpha]), expression(tau[beta]))
+```
+
+```{r}
+#| label: fig-cadeia-rats
+#| fig-cap: "Cadeias dos parâmetros populacionais — rats.txt"
+cadeia(results_rats, name)
+```
+
+```{r}
+#| label: fig-hist-rats
+#| fig-cap: "Histograma e densidade — rats.txt"
+g1 <- hist_den(results_rats[, 1], name = name[1])
+g2 <- hist_den(results_rats[, 2], name = name[2])
+g3 <- hist_den(results_rats[, 3], name = name[3])
+g4 <- hist_den(results_rats[, 4], name = name[4])
+g5 <- hist_den(results_rats[, 5], name = name[5])
+grid.arrange(g1, g2, g3, g4, g5, ncol = 1)
+```
+
+```{r}
+#| label: fig-acf-rats
+#| fig-cap: "FAC das cadeias — rats.txt"
+FAC(results_rats)
+```
+
+```{r}
+#| label: tbl-coef-rats
+resultado_rats <- coeficientes_hierarquico2(
+  cadeias_rats$alpha.i[inds_rats, ],
+  cadeias_rats$beta.i[inds_rats, ],
+  cadeias_rats$alpha.c,
+  cadeias_rats$beta.c,
+  cadeias_rats$tau.c,
+  cadeias_rats$tau.alpha,
+  cadeias_rats$tau.beta,
+  ncol(results_rats) + 60
+)
+tab_rats <- resultado_rats[[2]]
+knitr::kable(tab_rats)
+```
+
+Caterpillar plot pros 30 ratos — sem parâmetro real, só o intervalo de
+credibilidade de cada $\alpha_i$ (peso inicial) e $\beta_i$ (taxa de
+crescimento):
+
+```{r}
+#| label: fig-caterpillar-alpha-rats
+#| fig-cap: "Intervalo de credibilidade de cada alpha_i — rats.txt"
+cbind(alpha = 1:30, tab_rats[1:30, ]) %>%
+  as.data.frame() %>%
+  ggplot(aes(x = alpha, y = Média)) +
+  geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`), colour = "black", width = .1) +
+  geom_point(size = 3, shape = 21, fill = "white") +
+  xlab("Rato") + ylab(expression(alpha[i])) +
+  scale_x_continuous(breaks = seq(1, 30, 1)) +
+  theme_bw()
+```
+
+```{r}
+#| label: fig-caterpillar-beta-rats
+#| fig-cap: "Intervalo de credibilidade de cada beta_i — rats.txt"
+cbind(beta = 1:30, tab_rats[31:60, ]) %>%
+  as.data.frame() %>%
+  ggplot(aes(x = beta, y = Média)) +
+  geom_errorbar(aes(ymin = `2.5%`, ymax = `97.5%`), colour = "black", width = .1) +
+  geom_point(size = 3, shape = 21, fill = "white") +
+  xlab("Rato") + ylab(expression(beta[i])) +
+  scale_x_continuous(breaks = seq(1, 30, 1)) +
+  theme_bw()
+```

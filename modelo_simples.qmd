@@ -1,0 +1,229 @@
+---
+title: "Regressão linear bayesiana com amostrador de Gibbs"
+subtitle: "Modelo simples — dado simulado e dado real (`cars`)"
+lang: pt
+format:
+  html:
+    toc: true
+    code-fold: show
+    embed-resources: true
+execute:
+  freeze: auto
+---
+
+Companion literate do [`modelo_simples.R`](modelo_simples.R). O algoritmo (as full
+conditionals, o loop do Gibbs) é o mesmo — aqui só mostra a matemática ao lado do
+código e do gráfico. Derivação algébrica completa (passo a passo) está em
+[`artigo.pdf`](artigo.pdf), Seção 3.1; aqui vai só o resultado final de cada
+full conditional, o suficiente pra ler o código.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+source("gibbs_helpers.R", encoding = "UTF-8")
+```
+
+## Modelo
+
+$$
+Y_i \overset{iid}{\sim} N\left(\beta_0 + \beta_1 X_i, \ \tau^{-1}\right), \qquad i = 1, \ldots, n
+$$
+
+com priori independente pra cada parâmetro:
+
+$$
+\beta_0 \sim N(m_0, \sigma_0^2), \qquad
+\beta_1 \sim N(m_1, \sigma_1^2), \qquad
+\tau \sim \text{Gama}(a, b)
+$$
+
+A posteriori conjunta $p(\beta_0, \beta_1, \tau \mid \boldsymbol{y})$ não tem forma
+fechada — daí o Gibbs. Isolando cada parâmetro na posteriori (conjugação
+Normal-Normal pra $\beta_0,\beta_1$; Normal-Gama pra $\tau$), as 3 full
+conditionals saem fechadas:
+
+$$
+\tau \mid \beta_0, \beta_1, \bs{y} \ \sim\ \text{Gama}\left(\frac{n}{2}+a,\ \ b+\frac{1}{2}\sum_{i=1}^n (y_i-\beta_0-\beta_1 x_i)^2\right)
+$$
+
+$$
+\beta_0 \mid \beta_1, \tau, \bs{y} \ \sim\ N(M_0, C_0), \quad
+C_0^{-1} = n\tau + \frac{1}{\sigma_0^2}, \quad
+M_0 = C_0\left(\tau\sum_i y_i - \tau\beta_1\sum_i x_i + \frac{m_0}{\sigma_0^2}\right)
+$$
+
+$$
+\beta_1 \mid \beta_0, \tau, \bs{y} \ \sim\ N(M_1, C_1), \quad
+C_1^{-1} = \tau\sum_i x_i^2 + \frac{1}{\sigma_1^2}, \quad
+M_1 = C_1\left(\tau\sum_i x_i y_i - \tau\beta_0\sum_i x_i + \frac{m_1}{\sigma_1^2}\right)
+$$
+
+Gibbs = amostrar essas 3 em sequência, cada uma condicionada no valor mais
+recente das outras duas. É exatamente o que `gibbs_regressao_linear()` faz —
+uma função, usada abaixo pros dois conjuntos de dados (simulado e `cars`), sem
+reescrever o loop.
+
+## Dado simulado
+
+Gera uma amostra com parâmetros verdadeiros conhecidos — serve pra checar se o
+Gibbs recupera o que foi usado pra simular.
+
+```{r}
+#| label: dados-sim
+set.seed(12)
+
+n   <- 1000
+b0  <- 1
+b1  <- 0.5
+tau <- 2
+x   <- rnorm(n)
+y   <- b0 + b1 * x + rnorm(n, 0, sqrt(1 / tau))
+```
+
+Priori pouco informativa ($\sigma_0^2=\sigma_1^2=1000$, $a=b=0{,}1$):
+
+```{r}
+#| label: priori-sim
+mu0  <- 0; sig0 <- 1000
+mu1  <- 0; sig1 <- 1000
+a    <- 0.1; b <- 0.1
+nsim <- 3 * 10000
+```
+
+```{r}
+#| label: gibbs-sim
+#| results: hide
+cadeias_sim <- gibbs_regressao_linear(y, x, n, nsim, mu0, sig0, mu1, sig1, a, b)
+
+inds_sim    <- seq(nsim / 2, nsim)
+results_sim <- cadeias_sim[inds_sim, ]
+real        <- c(b0, b1, tau)
+name        <- c(expression(beta[0]), expression(beta[1]), expression(tau))
+```
+
+Traceplot (linha tracejada = IC de 95%):
+
+```{r}
+#| label: fig-cadeia-sim
+#| fig-cap: "Cadeias de $\\beta_0$, $\\beta_1$, $\\tau$ — dado simulado"
+cadeia(results_sim, name, real)
+```
+
+Histograma + densidade, dividido em 3 blocos da cadeia (checagem informal de
+mistura — os 3 blocos deviam concordar):
+
+```{r}
+#| label: fig-hist-sim
+#| fig-cap: "Histograma e densidade — dado simulado"
+g1 <- hist_den(results_sim[, 1], name = name[1], p = real[1])
+g2 <- hist_den(results_sim[, 2], name = name[2], p = real[2])
+g3 <- hist_den(results_sim[, 3], name = name[3], p = real[3])
+grid.arrange(g1, g2, g3, ncol = 1)
+```
+
+Autocorrelação:
+
+```{r}
+#| label: fig-acf-sim
+#| fig-cap: "FAC das cadeias — dado simulado"
+FAC(results_sim)
+```
+
+Média posteriori, desvio padrão e IC de 95%, contra o parâmetro real usado na
+simulação:
+
+```{r}
+#| label: tbl-coef-sim
+knitr::kable(coeficientes(results_sim, real = real))
+```
+
+## Dado real (`cars`)
+
+Mesmo modelo, mesma função `gibbs_regressao_linear()` — só troca dado e
+priori. `cars` é o dataset-base do R: distância de frenagem (`dist`) contra
+velocidade (`speed`).
+
+```{r}
+#| label: dados-cars
+y <- cars$speed
+x <- cars$dist
+n <- nrow(cars)
+```
+
+Priori um pouco mais informativa pra $\beta_0$ ($\sigma_0^2=100$) e pra $\tau$
+($a=b=2$):
+
+```{r}
+#| label: priori-cars
+mu0  <- 0; sig0 <- 100
+mu1  <- 0; sig1 <- 1000
+a    <- 2; b <- 2
+nsim <- 3 * 10000
+```
+
+```{r}
+#| label: gibbs-cars
+#| results: hide
+cadeias_cars <- gibbs_regressao_linear(y, x, n, nsim, mu0, sig0, mu1, sig1, a, b)
+
+inds_cars    <- seq(nsim / 2, nsim)
+results_cars <- cadeias_cars[inds_cars, ]
+classico     <- c(coefficients(lm(cars)), 1 / var(lm(cars)$residuals))
+```
+
+```{r}
+#| label: fig-cadeia-cars
+#| fig-cap: "Cadeias de $\\beta_0$, $\\beta_1$, $\\tau$ — cars"
+cadeia(results_cars, name)
+```
+
+```{r}
+#| label: fig-hist-cars
+#| fig-cap: "Histograma e densidade — cars"
+g1 <- hist_den(results_cars[, 1], name = name[1])
+g2 <- hist_den(results_cars[, 2], name = name[2])
+g3 <- hist_den(results_cars[, 3], name = name[3])
+grid.arrange(g1, g2, g3, ncol = 1)
+```
+
+```{r}
+#| label: fig-acf-cars
+#| fig-cap: "FAC das cadeias — cars"
+FAC(results_cars)
+```
+
+Comparando com o ajuste clássico (`lm()`) no lugar do parâmetro real — aqui
+não tem parâmetro real, é dado observado, não simulado:
+
+```{r}
+#| label: tbl-coef-cars
+knitr::kable(coeficientes(results_cars, real = classico))
+```
+
+Reta clássica (mínimos quadrados) vs reta bayesiana (média posteriori):
+
+```{r}
+#| label: fig-retas-cars
+#| fig-cap: "Distância x velocidade — reta clássica vs bayesiana"
+a_bayes <- mean(results_cars[, 1])
+b_bayes <- mean(results_cars[, 2])
+
+cbind(y, x) %>%
+  as.data.frame() %>%
+  ggplot(aes(y = y, x = x)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, col = "red") +
+  theme_classic() +
+  geom_abline(slope = b_bayes, intercept = a_bayes, col = "blue") +
+  labs(
+    title = "Relação entre a Distância e a Velocidade com\nreta do modelo linear clássico vs bayesiano",
+    x = "Distância",
+    y = "Velocidade"
+  )
+```
+
+Vermelho = clássico (`lm`), azul = bayesiano (média posteriori). Com priori
+pouco informativa e $n=50$, as duas retas ficam bem próximas — esperado, é
+basicamente o ponto da Seção "Motivação" do [artigo](artigo.pdf): priori não
+informativa tende a concordar com a inferência clássica.
